@@ -170,9 +170,18 @@ function App() {
     }
 
     const timer = window.setTimeout(() => {
+      const rect = latestStep.getBoundingClientRect()
+      const topBoundary = 88
+      const bottomBoundary = window.innerHeight - 104
+      const isOutsideFocusBand = rect.top < topBoundary || rect.bottom > bottomBoundary
+
+      if (!isOutsideFocusBand) {
+        return
+      }
+
       latestStep.scrollIntoView({
         behavior: reducedMotion ? 'auto' : 'smooth',
-        block: 'center',
+        block: 'nearest',
       })
     }, 120)
 
