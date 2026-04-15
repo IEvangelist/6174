@@ -41,9 +41,26 @@ const PERSONAL_SITE_URL = 'https://davidpine.dev'
 const WIKIPEDIA_URL = 'https://en.wikipedia.org/wiki/6174'
 
 const primaryButtonClass =
-  'inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-[var(--accent-strong)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent-soft)] disabled:cursor-not-allowed disabled:opacity-50'
+  'inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_var(--accent-soft)] transition duration-200 hover:brightness-105 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent-soft)] disabled:cursor-not-allowed disabled:opacity-50'
 
 const quickRules = ['4 digits', 'not all the same', '0001 works'] as const
+const quickRuleStyles = [
+  {
+    borderColor: 'var(--accent-soft)',
+    backgroundColor: 'var(--accent-soft)',
+    color: 'var(--accent-strong)',
+  },
+  {
+    borderColor: 'var(--accent-secondary-soft)',
+    backgroundColor: 'var(--accent-secondary-soft)',
+    color: 'var(--accent-secondary)',
+  },
+  {
+    borderColor: 'var(--accent-tertiary-soft)',
+    backgroundColor: 'var(--accent-tertiary-soft)',
+    color: 'var(--accent-tertiary)',
+  },
+] as const
 
 interface ExternalLinkItem {
   label: string
@@ -313,22 +330,26 @@ function App() {
     >
       <motion.div
         aria-hidden="true"
-        className="pointer-events-none absolute left-[-10rem] top-[-8rem] h-[22rem] w-[22rem] rounded-full bg-[radial-gradient(circle,rgba(109,40,217,0.16),transparent_68%)] blur-3xl"
-        style={reducedMotion ? undefined : { x: orbPrimaryX, y: orbPrimaryY }}
-      />
-      <motion.div
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-[-12rem] right-[-9rem] h-[24rem] w-[24rem] rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.12),transparent_70%)] blur-3xl"
-        style={reducedMotion ? undefined : { x: orbSecondaryX, y: orbSecondaryY }}
-      />
+          className="pointer-events-none absolute left-[-10rem] top-[-8rem] h-[22rem] w-[22rem] rounded-full bg-[radial-gradient(circle,rgba(109,40,217,0.18),transparent_68%)] blur-3xl"
+          style={reducedMotion ? undefined : { x: orbPrimaryX, y: orbPrimaryY }}
+        />
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-[-12rem] right-[-9rem] h-[24rem] w-[24rem] rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.16),transparent_70%)] blur-3xl"
+          style={reducedMotion ? undefined : { x: orbSecondaryX, y: orbSecondaryY }}
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-[18%] top-[24%] h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(244,114,182,0.12),transparent_68%)] blur-3xl"
+        />
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-5 sm:px-6 lg:px-8">
         <p aria-live="polite" className="sr-only">
           {announcement}
         </p>
 
-        <header className="flex items-center justify-between gap-3">
-          <div className="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-2 font-mono text-sm font-black tracking-[0.35em] text-[var(--heading)]">
+          <header className="flex items-center justify-between gap-3">
+          <div className="inline-flex items-center rounded-full border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),var(--accent-secondary-soft))] px-4 py-2 font-mono text-sm font-black tracking-[0.35em] text-[var(--heading)]">
             6174
           </div>
 
@@ -369,8 +390,9 @@ function App() {
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               {quickRules.map((rule) => (
                 <span
-                  className="rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]"
+                  className="rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em]"
                   key={rule}
+                  style={quickRuleStyles[quickRules.indexOf(rule)]}
                 >
                   {rule}
                 </span>
