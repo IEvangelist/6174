@@ -13,6 +13,7 @@
   --accent: #6d28d9;
   --accent-strong: #5b21b6;
   --accent-soft: rgba(109, 40, 217, 0.1);
+  --paper-line: rgba(32, 40, 64, 0.08);
   --shadow-lg: 0 18px 48px rgba(17, 24, 39, 0.08);
 
   font-synthesis: none;
@@ -34,6 +35,7 @@
   --accent: #c084fc;
   --accent-strong: #e9d5ff;
   --accent-soft: rgba(192, 132, 252, 0.14);
+  --paper-line: rgba(255, 255, 255, 0.08);
   --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
@@ -117,5 +119,20 @@ input[type='number'] {
   .button-shell:disabled {
     cursor: not-allowed;
     opacity: 0.45;
+  }
+
+  .math-sheet {
+    @apply rounded-[1.5rem] border px-4 py-5 sm:px-6 sm:py-6;
+    background:
+      linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 4rem,
+        var(--paper-line) 4rem,
+        var(--paper-line) 4.08rem
+      ),
+      var(--surface-strong);
+    background-size: 100% 4.65rem;
+    border-color: var(--border);
   }
 }

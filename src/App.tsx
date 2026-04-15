@@ -7,7 +7,8 @@ import {
   Share2,
 } from 'lucide-react'
 import { useReducedMotion } from 'framer-motion'
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type ComponentType, type FormEvent } from 'react'
+import { GitHubMarkIcon } from './components/GitHubMarkIcon'
 import { SequenceStepCard } from './components/SequenceStepCard'
 import { ThemeToggle } from './components/ThemeToggle'
 import { useTheme } from './hooks/useTheme'
@@ -30,10 +31,16 @@ const primaryButtonClass =
 
 const quickRules = ['4 digits', 'not all the same', '0001 works'] as const
 
-const externalLinks = [
-  { label: 'GitHub', icon: ExternalLink, href: GITHUB_PROFILE_URL },
+interface ExternalLinkItem {
+  label: string
+  icon: ComponentType<{ className?: string }>
+  href: string
+}
+
+const externalLinks: ExternalLinkItem[] = [
+  { label: 'GitHub', icon: GitHubMarkIcon, href: GITHUB_PROFILE_URL },
   { label: 'davidpine.dev', icon: Globe2, href: PERSONAL_SITE_URL },
-] as const
+]
 
 function readSharedSeed(): string {
   if (typeof window === 'undefined') {
@@ -81,6 +88,7 @@ function App() {
 
   const reducedMotion = useReducedMotion() ?? false
   const { isFollowingSystem, theme, toggleTheme } = useTheme()
+  const inputRef = useRef<HTMLInputElement>(null)
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null)
 
   const sequence = useMemo(
@@ -125,7 +133,7 @@ function App() {
   const helperTextId = error ? 'seed-help seed-error' : 'seed-help'
   const resultText = activeSeed
     ? `${activeSeed} reaches ${KAPREKAR_CONSTANT} in ${formatStepCount(sequence.length)}.`
-    : 'The steps will appear here.'
+    : 'The written math will appear here.'
 
   function runSequence(seed: string, source: 'manual' | 'random' | 'replay') {
     const nextSequence = generateKaprekarSequence(seed)
@@ -136,6 +144,7 @@ function App() {
     setVisibleSteps(reducedMotion ? nextSequence.length : 1)
     setAnimationNonce((current) => current + 1)
     writeSharedSeed(seed)
+    inputRef.current?.blur()
 
     if (source === 'random') {
       setAnnouncement(`Random seed ${seed}. ${formatStepCount(nextSequence.length)} to ${KAPREKAR_CONSTANT}.`)
@@ -301,6 +310,7 @@ function App() {
                   onChange={(event) => handleInputChange(event.target.value)}
                   pattern="[0-9]*"
                   placeholder="3524"
+                  ref={inputRef}
                   spellCheck={false}
                   type="text"
                   value={input}
@@ -371,11 +381,11 @@ function App() {
             </div>
           </section>
 
-          <section aria-labelledby="results-heading" className="mx-auto mt-10 max-w-4xl">
+          <section aria-labelledby="results-heading" className="mx-auto mt-12 max-w-3xl">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[var(--muted)]">
-                  Sequence
+                  Animated subtraction
                 </p>
                 <h2
                   className="mt-2 text-3xl font-black tracking-[-0.06em] text-[var(--heading)] sm:text-4xl"
@@ -420,13 +430,31 @@ function App() {
         </main>
 
         <footer className="flex flex-wrap items-center justify-center gap-4 border-t border-[var(--border)] pt-5 text-sm text-[var(--muted)]">
-          <a href={GITHUB_PROFILE_URL} rel="noreferrer" target="_blank">
+          <a
+            className="inline-flex items-center gap-2"
+            href={GITHUB_PROFILE_URL}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <GitHubMarkIcon className="size-4" />
             GitHub
           </a>
-          <a href={PERSONAL_SITE_URL} rel="noreferrer" target="_blank">
+          <a
+            className="inline-flex items-center gap-2"
+            href={PERSONAL_SITE_URL}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <Globe2 className="size-4" />
             davidpine.dev
           </a>
-          <a href={WIKIPEDIA_URL} rel="noreferrer" target="_blank">
+          <a
+            className="inline-flex items-center gap-2"
+            href={WIKIPEDIA_URL}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <ExternalLink className="size-4" />
             Wikipedia
           </a>
         </footer>
