@@ -13,7 +13,11 @@
   --accent: #6d28d9;
   --accent-strong: #5b21b6;
   --accent-soft: rgba(109, 40, 217, 0.1);
-  --paper-line: rgba(32, 40, 64, 0.08);
+  --paper-bg: #f2eadb;
+  --paper-bg-strong: #fcf8ef;
+  --paper-border: rgba(125, 102, 68, 0.18);
+  --paper-ink: #221d17;
+  --paper-shadow: rgba(113, 84, 41, 0.14);
   --shadow-lg: 0 18px 48px rgba(17, 24, 39, 0.08);
 
   font-synthesis: none;
@@ -35,7 +39,11 @@
   --accent: #c084fc;
   --accent-strong: #e9d5ff;
   --accent-soft: rgba(192, 132, 252, 0.14);
-  --paper-line: rgba(255, 255, 255, 0.08);
+  --paper-bg: #2a221b;
+  --paper-bg-strong: #342920;
+  --paper-border: rgba(255, 236, 204, 0.12);
+  --paper-ink: #f8efe2;
+  --paper-shadow: rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
@@ -122,17 +130,13 @@ input[type='number'] {
   }
 
   .math-sheet {
-    @apply rounded-[1.5rem] border px-4 py-5 sm:px-6 sm:py-6;
+    @apply rounded-[1.1rem] border px-4 py-4 sm:px-5 sm:py-5;
     background:
-      linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent 4rem,
-        var(--paper-line) 4rem,
-        var(--paper-line) 4.08rem
-      ),
-      var(--surface-strong);
-    background-size: 100% 4.65rem;
-    border-color: var(--border);
+      radial-gradient(circle at top, rgba(255, 255, 255, 0.22), transparent 48%),
+      linear-gradient(180deg, var(--paper-bg-strong), var(--paper-bg));
+    border-color: var(--paper-border);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 12px 28px var(--paper-shadow);
   }
 }

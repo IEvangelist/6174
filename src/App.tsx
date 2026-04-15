@@ -6,8 +6,22 @@ import {
   RefreshCcw,
   Share2,
 } from 'lucide-react'
-import { useReducedMotion } from 'framer-motion'
-import { useEffect, useMemo, useRef, useState, type ComponentType, type FormEvent } from 'react'
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from 'framer-motion'
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentType,
+  type FormEvent,
+  type PointerEvent,
+} from 'react'
 import { GitHubMarkIcon } from './components/GitHubMarkIcon'
 import { SequenceStepCard } from './components/SequenceStepCard'
 import { ThemeToggle } from './components/ThemeToggle'
@@ -90,6 +104,24 @@ function App() {
   const { isFollowingSystem, theme, toggleTheme } = useTheme()
   const inputRef = useRef<HTMLInputElement>(null)
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null)
+  const stepRefs = useRef<Record<number, HTMLLIElement | null>>({})
+
+  const rawParallaxX = useMotionValue(0)
+  const rawParallaxY = useMotionValue(0)
+  const parallaxX = useSpring(rawParallaxX, {
+    stiffness: 42,
+    damping: 20,
+    mass: 1,
+  })
+  const parallaxY = useSpring(rawParallaxY, {
+    stiffness: 42,
+    damping: 20,
+    mass: 1,
+  })
+  const orbPrimaryX = useTransform(parallaxX, (value) => value * 24)
+  const orbPrimaryY = useTransform(parallaxY, (value) => value * 18)
+  const orbSecondaryX = useTransform(parallaxX, (value) => value * -18)
+  const orbSecondaryY = useTransform(parallaxY, (value) => value * -14)
 
   const sequence = useMemo(
     () => (activeSeed ? generateKaprekarSequence(activeSeed) : []),
@@ -113,7 +145,7 @@ function App() {
       if (currentStep >= sequence.length) {
         window.clearInterval(timer)
       }
-    }, 700)
+    }, 950)
 
     return () => window.clearInterval(timer)
   }, [sequence, animationNonce, reducedMotion])
@@ -124,11 +156,28 @@ function App() {
     }
 
     resultsHeadingRef.current.focus({ preventScroll: true })
-    resultsHeadingRef.current.scrollIntoView({
-      behavior: reducedMotion ? 'auto' : 'smooth',
-      block: 'start',
-    })
   }, [activeSeed, animationNonce, reducedMotion])
+
+  useEffect(() => {
+    if (!activeSeed || !visibleSteps) {
+      return
+    }
+
+    const latestStep = stepRefs.current[visibleSteps]
+
+    if (!latestStep) {
+      return
+    }
+
+    const timer = window.setTimeout(() => {
+      latestStep.scrollIntoView({
+        behavior: reducedMotion ? 'auto' : 'smooth',
+        block: 'center',
+      })
+    }, 120)
+
+    return () => window.clearTimeout(timer)
+  }, [activeSeed, visibleSteps, animationNonce, reducedMotion])
 
   const helperTextId = error ? 'seed-help seed-error' : 'seed-help'
   const resultText = activeSeed
@@ -138,6 +187,7 @@ function App() {
   function runSequence(seed: string, source: 'manual' | 'random' | 'replay') {
     const nextSequence = generateKaprekarSequence(seed)
 
+    stepRefs.current = {}
     setInput(seed)
     setActiveSeed(seed)
     setError(null)
@@ -190,6 +240,7 @@ function App() {
   }
 
   function handleReset() {
+    stepRefs.current = {}
     setInput('')
     setActiveSeed(null)
     setError(null)
@@ -231,9 +282,38 @@ function App() {
     }
   }
 
+  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
+    if (reducedMotion) {
+      return
+    }
+
+    rawParallaxX.set((event.clientX / window.innerWidth - 0.5) * 2)
+    rawParallaxY.set((event.clientY / window.innerHeight - 0.5) * 2)
+  }
+
+  function handlePointerLeave() {
+    rawParallaxX.set(0)
+    rawParallaxY.set(0)
+  }
+
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <div className="mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-5 sm:px-6 lg:px-8">
+    <div
+      className="relative isolate min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]"
+      onPointerLeave={handlePointerLeave}
+      onPointerMove={handlePointerMove}
+    >
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-[-10rem] top-[-8rem] h-[22rem] w-[22rem] rounded-full bg-[radial-gradient(circle,rgba(109,40,217,0.16),transparent_68%)] blur-3xl"
+        style={reducedMotion ? undefined : { x: orbPrimaryX, y: orbPrimaryY }}
+      />
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-[-12rem] right-[-9rem] h-[24rem] w-[24rem] rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.12),transparent_70%)] blur-3xl"
+        style={reducedMotion ? undefined : { x: orbSecondaryX, y: orbSecondaryY }}
+      />
+
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-5 sm:px-6 lg:px-8">
         <p aria-live="polite" className="sr-only">
           {announcement}
         </p>
@@ -414,6 +494,9 @@ function App() {
                 {revealedSequence.map((step) => (
                   <SequenceStepCard
                     key={`${animationNonce}-${step.stepNumber}`}
+                    ref={(element) => {
+                      stepRefs.current[step.stepNumber] = element
+                    }}
                     reducedMotion={reducedMotion}
                     step={step}
                   />
