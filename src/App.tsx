@@ -357,13 +357,13 @@ function App() {
         <main className="flex-1 pb-10 pt-10 sm:pt-14">
           <section className="mx-auto max-w-3xl text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[var(--muted)]">
-              Largest - smallest - repeat
+              Kaprekar routine
             </p>
             <h1 className="mt-4 text-5xl font-black tracking-[-0.08em] text-[var(--heading)] sm:text-6xl md:text-7xl">
               4 digits in. 6174 out.
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-[var(--muted)] sm:text-lg">
-              Enter any valid 4-digit number and watch the routine do the rest.
+              Largest minus smallest, repeated until Kaprekar's constant takes over.
             </p>
 
             <div className="mt-6 flex flex-wrap justify-center gap-2">

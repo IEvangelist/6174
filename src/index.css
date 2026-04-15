@@ -2,7 +2,10 @@
 
 :root {
   color-scheme: light;
-  --bg: #f8f8fb;
+  --bg: #f3f6fb;
+  --bg-depth: #fbfdff;
+  --bg-accent-1: rgba(99, 102, 241, 0.14);
+  --bg-accent-2: rgba(56, 189, 248, 0.12);
   --surface: rgba(255, 255, 255, 0.84);
   --surface-strong: #ffffff;
   --surface-soft: rgba(255, 255, 255, 0.68);
@@ -28,7 +31,10 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --bg: #09090c;
+  --bg: #090c14;
+  --bg-depth: #121827;
+  --bg-accent-1: rgba(168, 85, 247, 0.18);
+  --bg-accent-2: rgba(56, 189, 248, 0.14);
   --surface: rgba(17, 17, 24, 0.84);
   --surface-strong: rgba(19, 19, 27, 0.98);
   --surface-soft: rgba(24, 24, 34, 0.84);
@@ -61,8 +67,9 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at top center, rgba(109, 40, 217, 0.08), transparent 30%),
-    var(--bg);
+    radial-gradient(circle at 12% 14%, var(--bg-accent-1), transparent 28%),
+    radial-gradient(circle at 88% 6%, var(--bg-accent-2), transparent 24%),
+    linear-gradient(180deg, var(--bg-depth), var(--bg));
   color: var(--text);
   font-family:
     Inter, 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont,
