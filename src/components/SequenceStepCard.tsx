@@ -1,26 +1,28 @@
-import { motion, type MotionValue, useTransform } from 'framer-motion'
-import { ArrowRight, Sparkles } from 'lucide-react'
+import { motion } from 'framer-motion'
 import type { KaprekarStep } from '../lib/kaprekar'
 
 interface SequenceStepCardProps {
   step: KaprekarStep
-  parallaxX: MotionValue<number>
-  parallaxY: MotionValue<number>
   reducedMotion: boolean
 }
 
 interface NumberPanelProps {
   label: string
   value: string
+  accent?: boolean
 }
 
-function NumberPanel({ label, value }: NumberPanelProps) {
+function NumberPanel({ accent = false, label, value }: NumberPanelProps) {
   return (
-    <div className="rounded-[1.35rem] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
-      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-[var(--muted)]">
+    <div className="rounded-[1.25rem] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-[var(--muted)]">
         {label}
       </p>
-      <p className="mt-3 font-mono text-4xl font-black tracking-[0.18em] text-[var(--heading)]">
+      <p
+        className={`mt-3 font-mono text-3xl font-black tracking-[0.18em] ${
+          accent ? 'text-[var(--accent-strong)]' : 'text-[var(--heading)]'
+        } sm:text-4xl`}
+      >
         {value}
       </p>
     </div>
@@ -29,59 +31,37 @@ function NumberPanel({ label, value }: NumberPanelProps) {
 
 export function SequenceStepCard({
   step,
-  parallaxX,
-  parallaxY,
   reducedMotion,
 }: SequenceStepCardProps) {
-  const depth = 8 + step.stepNumber * 3
-  const x = useTransform(parallaxX, (value) => value * depth)
-  const y = useTransform(parallaxY, (value) => value * depth)
-
   return (
     <motion.li
       className="list-none"
-      initial={reducedMotion ? false : { opacity: 0, y: 28, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.36, ease: 'easeOut' }}
+      initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, ease: 'easeOut' }}
     >
-      <motion.div
-        className="glass-panel h-full p-5 sm:p-6"
-        style={reducedMotion ? undefined : { x, y }}
-      >
-        <div className="flex items-center justify-between gap-4 text-[0.7rem] font-semibold uppercase tracking-[0.35em] text-[var(--muted)]">
+      <div className="glass-panel p-4 sm:p-5">
+        <div className="flex items-center justify-between gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-[var(--muted)]">
           <span>Step {step.stepNumber}</span>
-          <span>{step.reachedConstant ? 'Constant reached' : `From ${step.input}`}</span>
+          <span
+            className={`rounded-full px-3 py-1 ${
+              step.reachedConstant ? 'bg-[var(--accent-soft)] text-[var(--heading)]' : ''
+            }`}
+          >
+            {step.reachedConstant ? '6174' : step.input}
+          </span>
         </div>
 
-        <div className="mt-5 grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-end">
-          <NumberPanel label="High -> low" value={step.descending} />
-          <div className="hidden items-center justify-center pb-5 text-[var(--muted)] md:flex">
-            <ArrowRight className="size-5" />
-          </div>
-          <NumberPanel label="Low -> high" value={step.ascending} />
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <NumberPanel label="High" value={step.descending} />
+          <NumberPanel label="Low" value={step.ascending} />
+          <NumberPanel accent={step.reachedConstant} label="Next" value={step.result} />
         </div>
 
-        <div className="mt-5 rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--muted)]">
-            {step.reachedConstant ? (
-              <Sparkles className="size-4" />
-            ) : (
-              <ArrowRight className="size-4" />
-            )}
-            <span>{step.reachedConstant ? 'Kaprekar lock-in' : 'Subtract the two forms'}</span>
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center gap-3 font-mono text-2xl font-black tracking-[0.12em] text-[var(--heading)] sm:text-3xl">
-            <span>{step.descending}</span>
-            <span className="text-[var(--muted)]">-</span>
-            <span>{step.ascending}</span>
-            <span className="text-[var(--muted)]">=</span>
-            <span className={step.reachedConstant ? 'text-[var(--accent-strong)]' : ''}>
-              {step.result}
-            </span>
-          </div>
-        </div>
-      </motion.div>
+        <p className="mt-4 font-mono text-sm font-semibold tracking-[0.15em] text-[var(--muted)] sm:text-base">
+          {step.descending} - {step.ascending} = {step.result}
+        </p>
+      </div>
     </motion.li>
   )
 }
