@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
+import { ChevronDown } from 'lucide-react'
 import { forwardRef, useId, useState } from 'react'
 import type { KaprekarStep } from '../lib/kaprekar'
 
@@ -88,82 +89,89 @@ export const SequenceStepCard = forwardRef<HTMLLIElement, SequenceStepCardProps>
                 </span>
               </motion.div>
             </div>
-          </div>
 
-          <div className="mt-3">
-            <button
-              aria-controls={detailsId}
-              aria-expanded={isExpanded}
-              aria-label={isExpanded ? 'Hide step details' : 'Show step details'}
-              className={`inline-flex h-10 min-w-10 items-center justify-center rounded-full border px-3 font-mono text-lg font-black tracking-[0.1em] transition ${
-                isExpanded
-                  ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--heading)]'
-                  : 'border-[var(--border)] bg-[var(--surface-soft)] text-[var(--heading)]'
-              }`}
-              onClick={() => setIsExpanded((current) => !current)}
-              type="button"
-            >
-              ...
-            </button>
-
-            <AnimatePresence initial={false}>
-              {isExpanded ? (
-                <motion.div
-                  animate={{ height: 'auto', opacity: 1 }}
-                  className="overflow-hidden"
-                  exit={{ height: 0, opacity: 0 }}
-                  initial={{ height: 0, opacity: 0 }}
-                  transition={{
-                    duration: reducedMotion ? 0 : 0.24,
-                    ease: 'easeOut',
-                  }}
+            <div className="mt-4 border-t border-[var(--paper-border)] pt-3">
+              <div className="flex justify-center">
+                <button
+                  aria-controls={detailsId}
+                  aria-expanded={isExpanded}
+                  aria-label={isExpanded ? 'Hide step details' : 'Show step details'}
+                  className={`inline-flex size-10 items-center justify-center rounded-full border transition ${
+                    isExpanded
+                      ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--paper-ink)]'
+                      : 'border-[var(--paper-border)] bg-[var(--surface-soft)] text-[var(--paper-ink)]'
+                  }`}
+                  onClick={() => setIsExpanded((current) => !current)}
+                  type="button"
                 >
-                  <div
-                    className="mt-3 rounded-[1rem] border border-[var(--border)] bg-[var(--surface-soft)] p-4 text-sm leading-6 text-[var(--text)]"
-                    id={detailsId}
+                  <motion.span
+                    animate={{ rotate: isExpanded ? 180 : 0 }}
+                    transition={{ duration: reducedMotion ? 0 : 0.2, ease: 'easeOut' as const }}
                   >
-                    <p className="text-[0.72rem] font-semibold uppercase tracking-[0.3em] text-[var(--muted)]">
-                      How this step works
-                    </p>
-                    <div className="mt-3 space-y-2">
-                      <p>
-                        Start with{' '}
-                        <span className="font-mono font-semibold text-[var(--heading)]">
-                          {step.input}
-                        </span>
-                        .
+                    <ChevronDown className="size-4" />
+                  </motion.span>
+                </button>
+              </div>
+
+              <AnimatePresence initial={false}>
+                {isExpanded ? (
+                  <motion.div
+                    animate={{ height: 'auto', opacity: 1 }}
+                    className="overflow-hidden"
+                    exit={{ height: 0, opacity: 0 }}
+                    initial={{ height: 0, opacity: 0 }}
+                    transition={{
+                      duration: reducedMotion ? 0 : 0.24,
+                      ease: 'easeOut' as const,
+                    }}
+                  >
+                    <div
+                      className="mt-3 rounded-[0.95rem] border border-[var(--paper-border)] bg-[var(--surface-soft)] p-4 text-sm leading-6 text-[var(--paper-ink)]"
+                      id={detailsId}
+                    >
+                      <p className="text-[0.72rem] font-semibold uppercase tracking-[0.3em] text-[var(--muted)]">
+                        How this step works
                       </p>
-                      <p>
-                        Sort the digits high to low to get{' '}
-                        <span className="font-mono font-semibold text-[var(--heading)]">
-                          {step.descending}
-                        </span>
-                        .
-                      </p>
-                      <p>
-                        Sort the same digits low to high to get{' '}
-                        <span className="font-mono font-semibold text-[var(--heading)]">
-                          {step.ascending}
-                        </span>
-                        .
-                      </p>
-                      <p>
-                        Subtract them:{' '}
-                        <span className="font-mono font-semibold text-[var(--heading)]">
-                          {step.descending} - {step.ascending} = {step.result}
-                        </span>
-                        .
-                      </p>
-                      <p>
-                        {step.reachedConstant
-                          ? 'That reaches 6174, so the routine stops here.'
-                          : `Use ${step.result} as the next 4-digit number and repeat.`}
-                      </p>
+                      <div className="mt-3 space-y-2">
+                        <p>
+                          Start with{' '}
+                          <span className="font-mono font-semibold text-[var(--paper-ink)]">
+                            {step.input}
+                          </span>
+                          .
+                        </p>
+                        <p>
+                          Sort the digits high to low to get{' '}
+                          <span className="font-mono font-semibold text-[var(--paper-ink)]">
+                            {step.descending}
+                          </span>
+                          .
+                        </p>
+                        <p>
+                          Sort the same digits low to high to get{' '}
+                          <span className="font-mono font-semibold text-[var(--paper-ink)]">
+                            {step.ascending}
+                          </span>
+                          .
+                        </p>
+                        <p>
+                          Subtract them:{' '}
+                          <span className="font-mono font-semibold text-[var(--paper-ink)]">
+                            {step.descending} - {step.ascending} = {step.result}
+                          </span>
+                          .
+                        </p>
+                        <p>
+                          {step.reachedConstant
+                            ? 'That reaches 6174, so the routine stops here.'
+                            : `Use ${step.result} as the next 4-digit number and repeat.`}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </motion.li>
