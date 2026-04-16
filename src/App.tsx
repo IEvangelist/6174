@@ -13,6 +13,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type ComponentType,
   type FormEvent,
 } from 'react'
@@ -56,88 +57,32 @@ const quickRuleStyles = [
   },
 ] as const
 
-const floatingMarks = [
-  {
-    value: '67',
-    className:
-      'left-[4%] top-[14%] hidden rotate-[-6deg] text-[clamp(1.9rem,3.2vw,3rem)] text-[var(--accent-secondary-soft)] md:block',
-  },
-  {
-    value: '41',
-    className:
-      'left-[14%] top-[8%] hidden rotate-[4deg] text-[clamp(2.1rem,3.5vw,3.2rem)] text-[var(--accent-soft)] md:block',
-  },
-  {
-    value: '67',
-    className:
-      'left-[24%] top-[19%] hidden rotate-[-2deg] text-[clamp(2rem,3.4vw,3.1rem)] text-[var(--accent-tertiary-soft)] lg:block',
-  },
-  {
-    value: '41',
-    className:
-      'left-[34%] top-[10%] hidden rotate-[7deg] text-[clamp(1.8rem,3vw,2.8rem)] text-[var(--accent-secondary-soft)] lg:block',
-  },
-  {
-    value: '67',
-    className:
-      'right-[8%] top-[16%] hidden rotate-[6deg] text-[clamp(2.3rem,3.8vw,3.4rem)] text-[var(--accent-tertiary-soft)] md:block',
-  },
-  {
-    value: '41',
-    className:
-      'right-[22%] top-[8%] hidden rotate-[-8deg] text-[clamp(1.9rem,3.2vw,3rem)] text-[var(--accent-secondary-soft)] lg:block',
-  },
-  {
-    value: '67',
-    className:
-      'right-[32%] top-[22%] hidden rotate-[3deg] text-[clamp(2.1rem,3.5vw,3.1rem)] text-[var(--accent-soft)] xl:block',
-  },
-  {
-    value: '41',
-    className:
-      'left-[8%] top-[42%] hidden rotate-[-5deg] text-[clamp(2rem,3.4vw,3rem)] text-[var(--accent-tertiary-soft)] lg:block',
-  },
-  {
-    value: '67',
-    className:
-      'left-[18%] top-[56%] hidden rotate-[7deg] text-[clamp(1.8rem,3vw,2.7rem)] text-[var(--accent-secondary-soft)] md:block',
-  },
-  {
-    value: '41',
-    className:
-      'left-[28%] top-[48%] hidden rotate-[-6deg] text-[clamp(2.2rem,3.6vw,3.2rem)] text-[var(--accent-soft)] lg:block',
-  },
-  {
-    value: '67',
-    className:
-      'right-[16%] top-[46%] hidden rotate-[5deg] text-[clamp(2.1rem,3.5vw,3.2rem)] text-[var(--accent-secondary-soft)] lg:block',
-  },
-  {
-    value: '41',
-    className:
-      'right-[6%] top-[58%] hidden rotate-[-7deg] text-[clamp(1.9rem,3.2vw,2.9rem)] text-[var(--accent-tertiary-soft)] md:block',
-  },
-  {
-    value: '67',
-    className:
-      'left-[10%] bottom-[12%] hidden rotate-[-8deg] text-[clamp(2rem,3.3vw,3rem)] text-[var(--accent-soft)] xl:block',
-  },
-  {
-    value: '41',
-    className:
-      'left-[24%] bottom-[8%] hidden rotate-[4deg] text-[clamp(1.8rem,3vw,2.7rem)] text-[var(--accent-secondary-soft)] lg:block',
-  },
-  {
-    value: '67',
-    className:
-      'right-[28%] bottom-[12%] hidden rotate-[6deg] text-[clamp(2.1rem,3.5vw,3.1rem)] text-[var(--accent-tertiary-soft)] lg:block',
-  },
-  {
-    value: '41',
-    className:
-      'right-[12%] bottom-[7%] hidden rotate-[-5deg] text-[clamp(1.9rem,3.2vw,2.8rem)] text-[var(--accent-secondary-soft)] xl:block',
-  },
-] as const
+const floatingMarks: { value: string; className: string; style: CSSProperties }[] = [
+  { value: '67', className: 'hidden md:block', style: { left: '4%', top: '12%', fontSize: '1.55rem', transform: 'rotate(-6deg)', color: 'var(--accent-secondary-soft)' } },
+  { value: '41', className: 'hidden md:block', style: { left: '11%', top: '7%', fontSize: '1.7rem', transform: 'rotate(4deg)', color: 'var(--accent-soft)' } },
+  { value: '67', className: 'hidden lg:block', style: { left: '18%', top: '18%', fontSize: '1.6rem', transform: 'rotate(-2deg)', color: 'var(--accent-tertiary-soft)' } },
+  { value: '41', className: 'hidden lg:block', style: { left: '27%', top: '10%', fontSize: '1.45rem', transform: 'rotate(7deg)', color: 'var(--accent-secondary-soft)' } },
+  { value: '67', className: 'hidden xl:block', style: { left: '35%', top: '15%', fontSize: '1.7rem', transform: 'rotate(-4deg)', color: 'var(--accent-soft)' } },
+  { value: '41', className: 'hidden md:block', style: { left: '44%', top: '6%', fontSize: '1.55rem', transform: 'rotate(3deg)', color: 'var(--accent-tertiary-soft)' } },
+  { value: '67', className: 'hidden lg:block', style: { left: '55%', top: '14%', fontSize: '1.65rem', transform: 'rotate(-7deg)', color: 'var(--accent-secondary-soft)' } },
+  { value: '41', className: 'hidden xl:block', style: { right: '28%', top: '10%', fontSize: '1.5rem', transform: 'rotate(5deg)', color: 'var(--accent-soft)' } },
+  { value: '67', className: 'hidden md:block', style: { right: '18%', top: '18%', fontSize: '1.8rem', transform: 'rotate(-6deg)', color: 'var(--accent-tertiary-soft)' } },
+  { value: '41', className: 'hidden lg:block', style: { right: '8%', top: '12%', fontSize: '1.6rem', transform: 'rotate(6deg)', color: 'var(--accent-secondary-soft)' } },
+  { value: '67', className: 'hidden lg:block', style: { left: '6%', top: '38%', fontSize: '1.7rem', transform: 'rotate(-5deg)', color: 'var(--accent-soft)' } },
+  { value: '41', className: 'hidden md:block', style: { left: '15%', top: '50%', fontSize: '1.45rem', transform: 'rotate(7deg)', color: 'var(--accent-secondary-soft)' } },
+  { value: '67', className: 'hidden xl:block', style: { left: '26%', top: '43%', fontSize: '1.8rem', transform: 'rotate(-4deg)', color: 'var(--accent-tertiary-soft)' } },
+  { value: '41', className: 'hidden lg:block', style: { left: '37%', top: '54%', fontSize: '1.55rem', transform: 'rotate(5deg)', color: 'var(--accent-soft)' } },
+  { value: '67', className: 'hidden md:block', style: { right: '35%', top: '46%', fontSize: '1.65rem', transform: 'rotate(-7deg)', color: 'var(--accent-secondary-soft)' } },
+  { value: '41', className: 'hidden lg:block', style: { right: '18%', top: '56%', fontSize: '1.5rem', transform: 'rotate(4deg)', color: 'var(--accent-tertiary-soft)' } },
+  { value: '67', className: 'hidden xl:block', style: { right: '7%', top: '47%', fontSize: '1.75rem', transform: 'rotate(-5deg)', color: 'var(--accent-soft)' } },
+  { value: '41', className: 'hidden md:block', style: { left: '10%', bottom: '12%', fontSize: '1.55rem', transform: 'rotate(-8deg)', color: 'var(--accent-secondary-soft)' } },
+  { value: '67', className: 'hidden lg:block', style: { left: '22%', bottom: '8%', fontSize: '1.4rem', transform: 'rotate(4deg)', color: 'var(--accent-tertiary-soft)' } },
+  { value: '41', className: 'hidden xl:block', style: { left: '33%', bottom: '14%', fontSize: '1.6rem', transform: 'rotate(-6deg)', color: 'var(--accent-soft)' } },
+  { value: '67', className: 'hidden md:block', style: { right: '28%', bottom: '11%', fontSize: '1.5rem', transform: 'rotate(5deg)', color: 'var(--accent-secondary-soft)' } },
+  { value: '41', className: 'hidden lg:block', style: { right: '15%', bottom: '7%', fontSize: '1.45rem', transform: 'rotate(-5deg)', color: 'var(--accent-tertiary-soft)' } },
+  { value: '67', className: 'hidden xl:block', style: { right: '5%', bottom: '15%', fontSize: '1.7rem', transform: 'rotate(7deg)', color: 'var(--accent-soft)' } },
+  { value: '41', className: 'hidden 2xl:block', style: { left: '48%', bottom: '6%', fontSize: '1.5rem', transform: 'rotate(-4deg)', color: 'var(--accent-secondary-soft)' } },
+] 
 
 interface ExternalLinkItem {
   label: string
@@ -390,11 +335,12 @@ function App() {
           aria-hidden="true"
           className="absolute right-[18%] top-[24%] h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(244,114,182,0.08),transparent_68%)] blur-3xl"
         />
-        {floatingMarks.map(({ className, value }) => (
+        {floatingMarks.map(({ className, style, value }) => (
           <div
             aria-hidden="true"
             className={`absolute select-none font-black tracking-[-0.04em] opacity-[0.12] ${className}`}
             key={`${value}-${className}`}
+            style={style}
           >
             {value}
           </div>
