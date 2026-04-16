@@ -33,6 +33,7 @@ import {
   sanitizeSeed,
   type KaprekarRoutineId,
 } from './lib/kaprekar'
+import { createShareCardFile } from './lib/shareCard'
 
 const QUERY_PARAM = 'seed'
 const MODE_QUERY_PARAM = 'mode'
@@ -653,12 +654,34 @@ function App() {
     }
 
     const url = buildSharedUrl({ modeId, seed: activeSeed })
+    const shareTitle = `${routine.constant} - Kaprekar Constant Explorer`
+    const shareText = `Watch ${activeSeed} fall into ${routine.constant}.`
 
     try {
       if (navigator.share) {
+        const shareCardFile =
+          typeof navigator.canShare === 'function'
+            ? await createShareCardFile({
+                routine,
+                seed: activeSeed,
+                steps: sequence,
+              })
+            : null
+
+        if (shareCardFile && navigator.canShare({ files: [shareCardFile] })) {
+          await navigator.share({
+            title: shareTitle,
+            text: shareText,
+            url: url.toString(),
+            files: [shareCardFile],
+          })
+          setAnnouncement('Share sheet opened with preview image.')
+          return
+        }
+
         await navigator.share({
-          title: `${routine.constant} - Kaprekar Constant Explorer`,
-          text: `Watch ${activeSeed} fall into ${routine.constant}.`,
+          title: shareTitle,
+          text: shareText,
           url: url.toString(),
         })
         setAnnouncement('Share sheet opened.')

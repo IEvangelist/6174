@@ -7,6 +7,7 @@ A GitHub Pages-ready React + Vite + TypeScript + Tailwind CSS single-page app th
 - Oversized input-first interface with random, replay, reset, and share actions
 - Top-left routine toggle for **6174** and **495**
 - Query-string sharing via `?seed=3524` or `?mode=495&seed=352`
+- Generated share-card image files for supported native share targets, plus static Open Graph metadata for crawler-based previews
 - Theme-aware styling with light/dark support
 - Keyboard-friendly controls, ARIA labels, and reduced-motion-safe animation
 - GitHub Pages deployment on merges to `main`
