@@ -18,7 +18,6 @@ import {
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
   type ComponentType,
   type FormEvent,
   type PointerEvent,
@@ -63,62 +62,26 @@ const quickRuleStyles = [
   },
 ] as const
 
-type FloatingMarkStyle = CSSProperties & {
-  '--float-delay': string
-  '--float-duration': string
-  '--float-rotate': string
-  '--float-x': string
-  '--float-y': string
-}
-
 const floatingMarks = [
   {
     value: '67',
     className:
-      'left-[6%] top-[18%] hidden text-[clamp(4rem,9vw,7rem)] text-[var(--accent-secondary-soft)] lg:block',
-    style: {
-      '--float-delay': '0s',
-      '--float-duration': '18s',
-      '--float-rotate': '-7deg',
-      '--float-x': '10px',
-      '--float-y': '-16px',
-    } as FloatingMarkStyle,
+      'left-[6%] top-[18%] hidden rotate-[-7deg] text-[clamp(3.75rem,8.5vw,6.5rem)] text-[var(--accent-secondary-soft)] lg:block',
   },
   {
     value: '41',
     className:
-      'right-[10%] top-[24%] hidden text-[clamp(4.25rem,9.5vw,7.5rem)] text-[var(--accent-tertiary-soft)] xl:block',
-    style: {
-      '--float-delay': '1.6s',
-      '--float-duration': '20s',
-      '--float-rotate': '5deg',
-      '--float-x': '-12px',
-      '--float-y': '-18px',
-    } as FloatingMarkStyle,
+      'right-[10%] top-[24%] hidden rotate-[5deg] text-[clamp(4rem,9vw,7rem)] text-[var(--accent-tertiary-soft)] xl:block',
   },
   {
     value: '67',
     className:
-      'left-[12%] bottom-[14%] hidden text-[clamp(3.5rem,8vw,6.5rem)] text-[var(--accent-soft)] xl:block',
-    style: {
-      '--float-delay': '0.8s',
-      '--float-duration': '22s',
-      '--float-rotate': '-10deg',
-      '--float-x': '12px',
-      '--float-y': '-14px',
-    } as FloatingMarkStyle,
+      'left-[12%] bottom-[14%] hidden rotate-[-10deg] text-[clamp(3.25rem,7.5vw,5.75rem)] text-[var(--accent-soft)] xl:block',
   },
   {
     value: '41',
     className:
-      'right-[18%] bottom-[10%] hidden text-[clamp(3.75rem,8.5vw,6.75rem)] text-[var(--accent-secondary-soft)] lg:block',
-    style: {
-      '--float-delay': '2.4s',
-      '--float-duration': '19s',
-      '--float-rotate': '8deg',
-      '--float-x': '-10px',
-      '--float-y': '-15px',
-    } as FloatingMarkStyle,
+      'right-[18%] bottom-[10%] hidden rotate-[8deg] text-[clamp(3.5rem,8vw,6.25rem)] text-[var(--accent-secondary-soft)] lg:block',
   },
 ] as const
 
@@ -409,12 +372,11 @@ function App() {
           aria-hidden="true"
           className="pointer-events-none absolute right-[18%] top-[24%] h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(244,114,182,0.12),transparent_68%)] blur-3xl"
         />
-        {floatingMarks.map(({ className, style, value }) => (
+        {floatingMarks.map(({ className, value }) => (
           <div
             aria-hidden="true"
-            className={`pointer-events-none absolute select-none font-black tracking-[-0.04em] opacity-35 ${reducedMotion ? '' : 'floating-mark'} ${className}`}
+            className={`pointer-events-none absolute select-none font-black tracking-[-0.04em] opacity-[0.18] ${className}`}
             key={`${value}-${className}`}
-            style={style}
           >
             {value}
           </div>

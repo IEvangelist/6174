@@ -127,24 +127,6 @@ input[type='number'] {
   min-height: 100vh;
 }
 
-@keyframes floating-mark {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) rotate(var(--float-rotate));
-  }
-
-  50% {
-    transform: translate3d(var(--float-x), var(--float-y), 0)
-      rotate(calc(var(--float-rotate) + 2deg));
-  }
-}
-
-.floating-mark {
-  animation: floating-mark var(--float-duration) ease-in-out infinite;
-  animation-delay: var(--float-delay);
-  will-change: transform;
-}
-
 @layer components {
   .glass-panel {
     @apply rounded-[1.75rem] border backdrop-blur-md;
