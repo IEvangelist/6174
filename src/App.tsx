@@ -18,11 +18,11 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type ComponentType,
   type FormEvent,
   type PointerEvent,
 } from 'react'
-import { BrandMark } from './components/BrandMark'
 import { GitHubMarkIcon } from './components/GitHubMarkIcon'
 import { SequenceStepCard } from './components/SequenceStepCard'
 import { ThemeToggle } from './components/ThemeToggle'
@@ -63,34 +63,62 @@ const quickRuleStyles = [
   },
 ] as const
 
+type FloatingMarkStyle = CSSProperties & {
+  '--float-delay': string
+  '--float-duration': string
+  '--float-rotate': string
+  '--float-x': string
+  '--float-y': string
+}
+
 const floatingMarks = [
   {
     value: '67',
     className:
-      'left-[4%] top-[18%] hidden rotate-[-7deg] text-[clamp(4.5rem,10vw,9rem)] text-[var(--accent-secondary-soft)] md:block',
-    duration: 18,
-    delay: 0,
+      'left-[6%] top-[18%] hidden text-[clamp(4rem,9vw,7rem)] text-[var(--accent-secondary-soft)] lg:block',
+    style: {
+      '--float-delay': '0s',
+      '--float-duration': '18s',
+      '--float-rotate': '-7deg',
+      '--float-x': '10px',
+      '--float-y': '-16px',
+    } as FloatingMarkStyle,
   },
   {
     value: '41',
     className:
-      'right-[8%] top-[22%] hidden rotate-[5deg] text-[clamp(5rem,11vw,10rem)] text-[var(--accent-tertiary-soft)] lg:block',
-    duration: 20,
-    delay: 1.6,
+      'right-[10%] top-[24%] hidden text-[clamp(4.25rem,9.5vw,7.5rem)] text-[var(--accent-tertiary-soft)] xl:block',
+    style: {
+      '--float-delay': '1.6s',
+      '--float-duration': '20s',
+      '--float-rotate': '5deg',
+      '--float-x': '-12px',
+      '--float-y': '-18px',
+    } as FloatingMarkStyle,
   },
   {
     value: '67',
     className:
-      'left-[12%] bottom-[14%] hidden rotate-[-10deg] text-[clamp(4rem,9vw,8rem)] text-[var(--accent-soft)] lg:block',
-    duration: 22,
-    delay: 0.8,
+      'left-[12%] bottom-[14%] hidden text-[clamp(3.5rem,8vw,6.5rem)] text-[var(--accent-soft)] xl:block',
+    style: {
+      '--float-delay': '0.8s',
+      '--float-duration': '22s',
+      '--float-rotate': '-10deg',
+      '--float-x': '12px',
+      '--float-y': '-14px',
+    } as FloatingMarkStyle,
   },
   {
     value: '41',
     className:
-      'right-[18%] bottom-[10%] hidden rotate-[8deg] text-[clamp(4rem,9vw,8rem)] text-[var(--accent-secondary-soft)] md:block',
-    duration: 19,
-    delay: 2.4,
+      'right-[18%] bottom-[10%] hidden text-[clamp(3.75rem,8.5vw,6.75rem)] text-[var(--accent-secondary-soft)] lg:block',
+    style: {
+      '--float-delay': '2.4s',
+      '--float-duration': '19s',
+      '--float-rotate': '8deg',
+      '--float-x': '-10px',
+      '--float-y': '-15px',
+    } as FloatingMarkStyle,
   },
 ] as const
 
@@ -381,25 +409,15 @@ function App() {
           aria-hidden="true"
           className="pointer-events-none absolute right-[18%] top-[24%] h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(244,114,182,0.12),transparent_68%)] blur-3xl"
         />
-        {floatingMarks.map(({ className, delay, duration, value }) => (
-          <motion.div
-            animate={reducedMotion ? undefined : { x: [0, 8, 0], y: [0, -14, 0] }}
+        {floatingMarks.map(({ className, style, value }) => (
+          <div
             aria-hidden="true"
-            className={`pointer-events-none absolute select-none font-black tracking-[-0.08em] opacity-70 ${className}`}
+            className={`pointer-events-none absolute select-none font-black tracking-[-0.04em] opacity-35 ${reducedMotion ? '' : 'floating-mark'} ${className}`}
             key={`${value}-${className}`}
-            transition={
-              reducedMotion
-                ? undefined
-                : {
-                    duration,
-                    delay,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: 'easeInOut',
-                  }
-            }
+            style={style}
           >
             {value}
-          </motion.div>
+          </div>
         ))}
 
         <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-5 sm:px-6 lg:px-8">
@@ -408,11 +426,8 @@ function App() {
         </p>
 
         <header className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <BrandMark />
-            <div className="font-mono text-sm font-black tracking-[0.28em] text-[var(--heading)]">
-              6174
-            </div>
+          <div className="inline-flex items-center rounded-full border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),var(--accent-secondary-soft))] px-4 py-2 font-mono text-sm font-black tracking-[0.35em] text-[var(--heading)]">
+            6174
           </div>
 
           <div className="flex items-center gap-2">
@@ -442,7 +457,7 @@ function App() {
             <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[var(--muted)]">
               Kaprekar routine
             </p>
-            <h1 className="mt-4 text-5xl font-black tracking-[-0.08em] text-[var(--heading)] sm:text-6xl md:text-7xl">
+            <h1 className="mt-4 text-5xl font-black tracking-[-0.05em] text-[var(--heading)] sm:text-6xl md:text-7xl">
               4 digits in. 6174 out.
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-[var(--muted)] sm:text-lg">
@@ -561,7 +576,7 @@ function App() {
                   Animated subtraction
                 </p>
                 <h2
-                  className="mt-2 text-3xl font-black tracking-[-0.06em] text-[var(--heading)] sm:text-4xl"
+                  className="mt-2 text-3xl font-black tracking-[-0.04em] text-[var(--heading)] sm:text-4xl"
                   id="results-heading"
                   ref={resultsHeadingRef}
                   tabIndex={-1}
