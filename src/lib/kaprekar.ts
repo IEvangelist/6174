@@ -1,6 +1,11 @@
-export const KAPREKAR_CONSTANT = '6174'
+export type KaprekarRoutineId = '6174' | '495'
 
-const MAX_ITERATIONS = 8
+export interface KaprekarRoutine {
+  id: KaprekarRoutineId
+  constant: string
+  digitCount: number
+  maxIterations: number
+}
 
 export interface KaprekarStep {
   stepNumber: number
@@ -11,36 +16,39 @@ export interface KaprekarStep {
   reachedConstant: boolean
 }
 
-export function sanitizeSeed(value: string): string {
-  return value.replace(/\D/g, '').slice(0, 4)
+export const DEFAULT_KAPREKAR_ROUTINE_ID: KaprekarRoutineId = '6174'
+
+export const KAPREKAR_ROUTINES: Record<KaprekarRoutineId, KaprekarRoutine> = {
+  '6174': {
+    id: '6174',
+    constant: '6174',
+    digitCount: 4,
+    maxIterations: 8,
+  },
+  '495': {
+    id: '495',
+    constant: '495',
+    digitCount: 3,
+    maxIterations: 6,
+  },
 }
 
-function isCompleteSeed(value: string): boolean {
-  return /^\d{4}$/.test(value)
+export const KAPREKAR_ROUTINE_IDS = Object.keys(KAPREKAR_ROUTINES) as KaprekarRoutineId[]
+export const KAPREKAR_CONSTANT =
+  KAPREKAR_ROUTINES[DEFAULT_KAPREKAR_ROUTINE_ID].constant
+
+function resolveRoutine(
+  routine: KaprekarRoutine | KaprekarRoutineId = DEFAULT_KAPREKAR_ROUTINE_ID,
+): KaprekarRoutine {
+  return typeof routine === 'string' ? KAPREKAR_ROUTINES[routine] : routine
 }
 
-export function isValidSeed(value: string): boolean {
-  return isCompleteSeed(value) && new Set(value).size > 1
+function isCompleteSeed(value: string, digitCount: number): boolean {
+  return new RegExp(`^\\d{${digitCount}}$`).test(value)
 }
 
-export function getSeedError(value: string): string | null {
-  if (!value) {
-    return 'Enter exactly four digits to start the routine.'
-  }
-
-  if (!isCompleteSeed(value)) {
-    return 'Use exactly four digits. Leading zeroes count.'
-  }
-
-  if (new Set(value).size < 2) {
-    return 'Use at least two different digits so the routine can move.'
-  }
-
-  return null
-}
-
-function padToFourDigits(value: number): string {
-  return value.toString().padStart(4, '0')
+function padToDigits(value: number, digitCount: number): string {
+  return value.toString().padStart(digitCount, '0')
 }
 
 function sortDigits(value: string, direction: 'asc' | 'desc'): string {
@@ -52,8 +60,53 @@ function sortDigits(value: string, direction: 'asc' | 'desc'): string {
     .join('')
 }
 
-export function generateKaprekarSequence(seed: string): KaprekarStep[] {
-  if (!isValidSeed(seed)) {
+export function isKaprekarRoutineId(value: string | null | undefined): value is KaprekarRoutineId {
+  return value === '6174' || value === '495'
+}
+
+export function sanitizeSeed(
+  value: string,
+  digitCount = KAPREKAR_ROUTINES[DEFAULT_KAPREKAR_ROUTINE_ID].digitCount,
+): string {
+  return value.replace(/\D/g, '').slice(0, digitCount)
+}
+
+export function isValidSeed(
+  value: string,
+  routine: KaprekarRoutine | KaprekarRoutineId = DEFAULT_KAPREKAR_ROUTINE_ID,
+): boolean {
+  const { digitCount } = resolveRoutine(routine)
+  return isCompleteSeed(value, digitCount) && new Set(value).size > 1
+}
+
+export function getSeedError(
+  value: string,
+  routine: KaprekarRoutine | KaprekarRoutineId = DEFAULT_KAPREKAR_ROUTINE_ID,
+): string | null {
+  const { digitCount } = resolveRoutine(routine)
+
+  if (!value) {
+    return `Enter exactly ${digitCount} digits to start the routine.`
+  }
+
+  if (!isCompleteSeed(value, digitCount)) {
+    return `Use exactly ${digitCount} digits. Leading zeroes count.`
+  }
+
+  if (new Set(value).size < 2) {
+    return 'Use at least two different digits so the routine can move.'
+  }
+
+  return null
+}
+
+export function generateKaprekarSequence(
+  seed: string,
+  routine: KaprekarRoutine | KaprekarRoutineId = DEFAULT_KAPREKAR_ROUTINE_ID,
+): KaprekarStep[] {
+  const { constant, digitCount, maxIterations } = resolveRoutine(routine)
+
+  if (!isValidSeed(seed, routine)) {
     return []
   }
 
@@ -63,15 +116,15 @@ export function generateKaprekarSequence(seed: string): KaprekarStep[] {
 
   for (
     let stepNumber = 1;
-    stepNumber <= MAX_ITERATIONS && !seen.has(current);
+    stepNumber <= maxIterations && !seen.has(current);
     stepNumber += 1
   ) {
     seen.add(current)
 
     const descending = sortDigits(current, 'desc')
     const ascending = sortDigits(current, 'asc')
-    const result = padToFourDigits(Number(descending) - Number(ascending))
-    const reachedConstant = result === KAPREKAR_CONSTANT
+    const result = padToDigits(Number(descending) - Number(ascending), digitCount)
+    const reachedConstant = result === constant
 
     steps.push({
       stepNumber,
@@ -92,11 +145,14 @@ export function generateKaprekarSequence(seed: string): KaprekarStep[] {
   return steps
 }
 
-export function generateRandomValidSeed(): string {
+export function generateRandomValidSeed(
+  routine: KaprekarRoutine | KaprekarRoutineId = DEFAULT_KAPREKAR_ROUTINE_ID,
+): string {
+  const { digitCount } = resolveRoutine(routine)
   let candidate = ''
 
-  while (!isValidSeed(candidate)) {
-    candidate = padToFourDigits(Math.floor(Math.random() * 10_000))
+  while (!isValidSeed(candidate, routine)) {
+    candidate = padToDigits(Math.floor(Math.random() * 10 ** digitCount), digitCount)
   }
 
   return candidate

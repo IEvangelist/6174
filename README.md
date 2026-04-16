@@ -1,11 +1,12 @@
 # 6174
 
-A GitHub Pages-ready React + Vite + TypeScript + Tailwind CSS single-page app that animates Kaprekar's routine and shows how valid 4-digit inputs collapse into **6174**.
+A GitHub Pages-ready React + Vite + TypeScript + Tailwind CSS single-page app that animates Kaprekar's routine in two modes: valid 4-digit inputs collapsing into **6174**, or valid 3-digit inputs collapsing into **495**.
 
 ## Features
 
 - Oversized input-first interface with random, replay, reset, and share actions
-- Query-string sharing via `?seed=3524`
+- Top-left routine toggle for **6174** and **495**
+- Query-string sharing via `?seed=3524` or `?mode=495&seed=352`
 - Theme-aware styling with light/dark support
 - Keyboard-friendly controls, ARIA labels, and reduced-motion-safe animation
 - GitHub Pages deployment on merges to `main`

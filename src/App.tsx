@@ -22,23 +22,27 @@ import { SequenceStepCard } from './components/SequenceStepCard'
 import { ThemeToggle } from './components/ThemeToggle'
 import { useTheme } from './hooks/useTheme'
 import {
-  KAPREKAR_CONSTANT,
+  DEFAULT_KAPREKAR_ROUTINE_ID,
+  KAPREKAR_ROUTINE_IDS,
+  KAPREKAR_ROUTINES,
   generateKaprekarSequence,
   generateRandomValidSeed,
   getSeedError,
+  isKaprekarRoutineId,
   isValidSeed,
   sanitizeSeed,
+  type KaprekarRoutineId,
 } from './lib/kaprekar'
 
 const QUERY_PARAM = 'seed'
+const MODE_QUERY_PARAM = 'mode'
 const GITHUB_PROFILE_URL = 'https://github.com/IEvangelist'
 const PERSONAL_SITE_URL = 'https://davidpine.dev'
-const WIKIPEDIA_URL = 'https://en.wikipedia.org/wiki/6174'
+const WIKIPEDIA_URL = "https://en.wikipedia.org/wiki/Kaprekar%27s_constant"
 
 const primaryButtonClass =
   'inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_var(--accent-soft)] transition duration-200 hover:brightness-105 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent-soft)] disabled:cursor-not-allowed disabled:opacity-50'
 
-const quickRules = ['4 digits', 'not all the same', '0001 works'] as const
 const quickRuleStyles = [
   {
     borderColor: 'var(--accent-soft)',
@@ -57,32 +61,312 @@ const quickRuleStyles = [
   },
 ] as const
 
-const floatingMarks: { value: string; className: string; style: CSSProperties }[] = [
-  { value: '67', className: 'hidden md:block', style: { left: '4%', top: '12%', fontSize: '1.55rem', transform: 'rotate(-6deg)', color: 'var(--accent-secondary-soft)' } },
-  { value: '41', className: 'hidden md:block', style: { left: '11%', top: '7%', fontSize: '1.7rem', transform: 'rotate(4deg)', color: 'var(--accent-soft)' } },
-  { value: '67', className: 'hidden lg:block', style: { left: '18%', top: '18%', fontSize: '1.6rem', transform: 'rotate(-2deg)', color: 'var(--accent-tertiary-soft)' } },
-  { value: '41', className: 'hidden lg:block', style: { left: '27%', top: '10%', fontSize: '1.45rem', transform: 'rotate(7deg)', color: 'var(--accent-secondary-soft)' } },
-  { value: '67', className: 'hidden xl:block', style: { left: '35%', top: '15%', fontSize: '1.7rem', transform: 'rotate(-4deg)', color: 'var(--accent-soft)' } },
-  { value: '41', className: 'hidden md:block', style: { left: '44%', top: '6%', fontSize: '1.55rem', transform: 'rotate(3deg)', color: 'var(--accent-tertiary-soft)' } },
-  { value: '67', className: 'hidden lg:block', style: { left: '55%', top: '14%', fontSize: '1.65rem', transform: 'rotate(-7deg)', color: 'var(--accent-secondary-soft)' } },
-  { value: '41', className: 'hidden xl:block', style: { right: '28%', top: '10%', fontSize: '1.5rem', transform: 'rotate(5deg)', color: 'var(--accent-soft)' } },
-  { value: '67', className: 'hidden md:block', style: { right: '18%', top: '18%', fontSize: '1.8rem', transform: 'rotate(-6deg)', color: 'var(--accent-tertiary-soft)' } },
-  { value: '41', className: 'hidden lg:block', style: { right: '8%', top: '12%', fontSize: '1.6rem', transform: 'rotate(6deg)', color: 'var(--accent-secondary-soft)' } },
-  { value: '67', className: 'hidden lg:block', style: { left: '6%', top: '38%', fontSize: '1.7rem', transform: 'rotate(-5deg)', color: 'var(--accent-soft)' } },
-  { value: '41', className: 'hidden md:block', style: { left: '15%', top: '50%', fontSize: '1.45rem', transform: 'rotate(7deg)', color: 'var(--accent-secondary-soft)' } },
-  { value: '67', className: 'hidden xl:block', style: { left: '26%', top: '43%', fontSize: '1.8rem', transform: 'rotate(-4deg)', color: 'var(--accent-tertiary-soft)' } },
-  { value: '41', className: 'hidden lg:block', style: { left: '37%', top: '54%', fontSize: '1.55rem', transform: 'rotate(5deg)', color: 'var(--accent-soft)' } },
-  { value: '67', className: 'hidden md:block', style: { right: '35%', top: '46%', fontSize: '1.65rem', transform: 'rotate(-7deg)', color: 'var(--accent-secondary-soft)' } },
-  { value: '41', className: 'hidden lg:block', style: { right: '18%', top: '56%', fontSize: '1.5rem', transform: 'rotate(4deg)', color: 'var(--accent-tertiary-soft)' } },
-  { value: '67', className: 'hidden xl:block', style: { right: '7%', top: '47%', fontSize: '1.75rem', transform: 'rotate(-5deg)', color: 'var(--accent-soft)' } },
-  { value: '41', className: 'hidden md:block', style: { left: '10%', bottom: '12%', fontSize: '1.55rem', transform: 'rotate(-8deg)', color: 'var(--accent-secondary-soft)' } },
-  { value: '67', className: 'hidden lg:block', style: { left: '22%', bottom: '8%', fontSize: '1.4rem', transform: 'rotate(4deg)', color: 'var(--accent-tertiary-soft)' } },
-  { value: '41', className: 'hidden xl:block', style: { left: '33%', bottom: '14%', fontSize: '1.6rem', transform: 'rotate(-6deg)', color: 'var(--accent-soft)' } },
-  { value: '67', className: 'hidden md:block', style: { right: '28%', bottom: '11%', fontSize: '1.5rem', transform: 'rotate(5deg)', color: 'var(--accent-secondary-soft)' } },
-  { value: '41', className: 'hidden lg:block', style: { right: '15%', bottom: '7%', fontSize: '1.45rem', transform: 'rotate(-5deg)', color: 'var(--accent-tertiary-soft)' } },
-  { value: '67', className: 'hidden xl:block', style: { right: '5%', bottom: '15%', fontSize: '1.7rem', transform: 'rotate(7deg)', color: 'var(--accent-soft)' } },
-  { value: '41', className: 'hidden 2xl:block', style: { left: '48%', bottom: '6%', fontSize: '1.5rem', transform: 'rotate(-4deg)', color: 'var(--accent-secondary-soft)' } },
-] 
+type CSSVariableOverrides = CSSProperties & Record<`--${string}`, string>
+
+interface FloatingMarkLayout {
+  fragmentIndex: 0 | 1
+  className: string
+  style: CSSProperties
+}
+
+interface RoutineUiConfig {
+  placeholderSeed: string
+  quickRuleExample: string
+  backgroundFragments: readonly [string, string]
+  themeOverrides?: CSSVariableOverrides
+}
+
+const floatingMarkLayout: FloatingMarkLayout[] = [
+  {
+    fragmentIndex: 0,
+    className: 'hidden md:block',
+    style: {
+      left: '4%',
+      top: '12%',
+      fontSize: '1.55rem',
+      transform: 'rotate(-6deg)',
+      color: 'var(--accent-secondary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 1,
+    className: 'hidden md:block',
+    style: {
+      left: '11%',
+      top: '7%',
+      fontSize: '1.7rem',
+      transform: 'rotate(4deg)',
+      color: 'var(--accent-soft)',
+    },
+  },
+  {
+    fragmentIndex: 0,
+    className: 'hidden lg:block',
+    style: {
+      left: '18%',
+      top: '18%',
+      fontSize: '1.6rem',
+      transform: 'rotate(-2deg)',
+      color: 'var(--accent-tertiary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 1,
+    className: 'hidden lg:block',
+    style: {
+      left: '27%',
+      top: '10%',
+      fontSize: '1.45rem',
+      transform: 'rotate(7deg)',
+      color: 'var(--accent-secondary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 0,
+    className: 'hidden xl:block',
+    style: {
+      left: '35%',
+      top: '15%',
+      fontSize: '1.7rem',
+      transform: 'rotate(-4deg)',
+      color: 'var(--accent-soft)',
+    },
+  },
+  {
+    fragmentIndex: 1,
+    className: 'hidden md:block',
+    style: {
+      left: '44%',
+      top: '6%',
+      fontSize: '1.55rem',
+      transform: 'rotate(3deg)',
+      color: 'var(--accent-tertiary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 0,
+    className: 'hidden lg:block',
+    style: {
+      left: '55%',
+      top: '14%',
+      fontSize: '1.65rem',
+      transform: 'rotate(-7deg)',
+      color: 'var(--accent-secondary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 1,
+    className: 'hidden xl:block',
+    style: {
+      right: '28%',
+      top: '10%',
+      fontSize: '1.5rem',
+      transform: 'rotate(5deg)',
+      color: 'var(--accent-soft)',
+    },
+  },
+  {
+    fragmentIndex: 0,
+    className: 'hidden md:block',
+    style: {
+      right: '18%',
+      top: '18%',
+      fontSize: '1.8rem',
+      transform: 'rotate(-6deg)',
+      color: 'var(--accent-tertiary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 1,
+    className: 'hidden lg:block',
+    style: {
+      right: '8%',
+      top: '12%',
+      fontSize: '1.6rem',
+      transform: 'rotate(6deg)',
+      color: 'var(--accent-secondary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 0,
+    className: 'hidden lg:block',
+    style: {
+      left: '6%',
+      top: '38%',
+      fontSize: '1.7rem',
+      transform: 'rotate(-5deg)',
+      color: 'var(--accent-soft)',
+    },
+  },
+  {
+    fragmentIndex: 1,
+    className: 'hidden md:block',
+    style: {
+      left: '15%',
+      top: '50%',
+      fontSize: '1.45rem',
+      transform: 'rotate(7deg)',
+      color: 'var(--accent-secondary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 0,
+    className: 'hidden xl:block',
+    style: {
+      left: '26%',
+      top: '43%',
+      fontSize: '1.8rem',
+      transform: 'rotate(-4deg)',
+      color: 'var(--accent-tertiary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 1,
+    className: 'hidden lg:block',
+    style: {
+      left: '37%',
+      top: '54%',
+      fontSize: '1.55rem',
+      transform: 'rotate(5deg)',
+      color: 'var(--accent-soft)',
+    },
+  },
+  {
+    fragmentIndex: 0,
+    className: 'hidden md:block',
+    style: {
+      right: '35%',
+      top: '46%',
+      fontSize: '1.65rem',
+      transform: 'rotate(-7deg)',
+      color: 'var(--accent-secondary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 1,
+    className: 'hidden lg:block',
+    style: {
+      right: '18%',
+      top: '56%',
+      fontSize: '1.5rem',
+      transform: 'rotate(4deg)',
+      color: 'var(--accent-tertiary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 0,
+    className: 'hidden xl:block',
+    style: {
+      right: '7%',
+      top: '47%',
+      fontSize: '1.75rem',
+      transform: 'rotate(-5deg)',
+      color: 'var(--accent-soft)',
+    },
+  },
+  {
+    fragmentIndex: 1,
+    className: 'hidden md:block',
+    style: {
+      left: '10%',
+      bottom: '12%',
+      fontSize: '1.55rem',
+      transform: 'rotate(-8deg)',
+      color: 'var(--accent-secondary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 0,
+    className: 'hidden lg:block',
+    style: {
+      left: '22%',
+      bottom: '8%',
+      fontSize: '1.4rem',
+      transform: 'rotate(4deg)',
+      color: 'var(--accent-tertiary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 1,
+    className: 'hidden xl:block',
+    style: {
+      left: '33%',
+      bottom: '14%',
+      fontSize: '1.6rem',
+      transform: 'rotate(-6deg)',
+      color: 'var(--accent-soft)',
+    },
+  },
+  {
+    fragmentIndex: 0,
+    className: 'hidden md:block',
+    style: {
+      right: '28%',
+      bottom: '11%',
+      fontSize: '1.5rem',
+      transform: 'rotate(5deg)',
+      color: 'var(--accent-secondary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 1,
+    className: 'hidden lg:block',
+    style: {
+      right: '15%',
+      bottom: '7%',
+      fontSize: '1.45rem',
+      transform: 'rotate(-5deg)',
+      color: 'var(--accent-tertiary-soft)',
+    },
+  },
+  {
+    fragmentIndex: 0,
+    className: 'hidden xl:block',
+    style: {
+      right: '5%',
+      bottom: '15%',
+      fontSize: '1.7rem',
+      transform: 'rotate(7deg)',
+      color: 'var(--accent-soft)',
+    },
+  },
+  {
+    fragmentIndex: 1,
+    className: 'hidden 2xl:block',
+    style: {
+      left: '48%',
+      bottom: '6%',
+      fontSize: '1.5rem',
+      transform: 'rotate(-4deg)',
+      color: 'var(--accent-secondary-soft)',
+    },
+  },
+]
+
+const routineUi: Record<KaprekarRoutineId, RoutineUiConfig> = {
+  '6174': {
+    placeholderSeed: '3524',
+    quickRuleExample: '0001',
+    backgroundFragments: ['67', '41'],
+  },
+  '495': {
+    placeholderSeed: '352',
+    quickRuleExample: '001',
+    backgroundFragments: ['49', '5'],
+    themeOverrides: {
+      '--bg-accent-1': 'rgba(16, 185, 129, 0.14)',
+      '--bg-accent-2': 'rgba(14, 165, 233, 0.12)',
+      '--bg-accent-3': 'rgba(245, 158, 11, 0.1)',
+      '--accent': '#059669',
+      '--accent-strong': '#047857',
+      '--accent-soft': 'rgba(5, 150, 105, 0.12)',
+      '--accent-secondary': '#0ea5e9',
+      '--accent-secondary-soft': 'rgba(14, 165, 233, 0.12)',
+      '--accent-tertiary': '#f59e0b',
+      '--accent-tertiary-soft': 'rgba(245, 158, 11, 0.12)',
+    },
+  },
+}
 
 interface ExternalLinkItem {
   label: string
@@ -95,19 +379,31 @@ const externalLinks: ExternalLinkItem[] = [
   { label: 'davidpine.dev', icon: Globe2, href: PERSONAL_SITE_URL },
 ]
 
-function readSharedSeed(): string {
+function readSharedState(): { modeId: KaprekarRoutineId; seed: string } {
   if (typeof window === 'undefined') {
-    return ''
+    return { modeId: DEFAULT_KAPREKAR_ROUTINE_ID, seed: '' }
   }
 
-  return sanitizeSeed(new URL(window.location.href).searchParams.get(QUERY_PARAM) ?? '')
+  const url = new URL(window.location.href)
+  const rawModeId = url.searchParams.get(MODE_QUERY_PARAM)
+  const modeId = isKaprekarRoutineId(rawModeId) ? rawModeId : DEFAULT_KAPREKAR_ROUTINE_ID
+
+  return {
+    modeId,
+    seed: sanitizeSeed(
+      url.searchParams.get(QUERY_PARAM) ?? '',
+      KAPREKAR_ROUTINES[modeId].digitCount,
+    ),
+  }
 }
 
-function writeSharedSeed(seed?: string): void {
-  if (typeof window === 'undefined') {
-    return
-  }
-
+function buildSharedUrl({
+  modeId,
+  seed,
+}: {
+  modeId: KaprekarRoutineId
+  seed?: string
+}): URL {
   const url = new URL(window.location.href)
 
   if (seed) {
@@ -116,25 +412,60 @@ function writeSharedSeed(seed?: string): void {
     url.searchParams.delete(QUERY_PARAM)
   }
 
-  window.history.replaceState({}, '', url)
+  if (modeId === DEFAULT_KAPREKAR_ROUTINE_ID) {
+    url.searchParams.delete(MODE_QUERY_PARAM)
+  } else {
+    url.searchParams.set(MODE_QUERY_PARAM, modeId)
+  }
+
+  return url
+}
+
+function writeSharedState({
+  modeId,
+  seed,
+}: {
+  modeId: KaprekarRoutineId
+  seed?: string
+}): void {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  window.history.replaceState({}, '', buildSharedUrl({ modeId, seed }))
 }
 
 function formatStepCount(stepCount: number): string {
   return `${stepCount} ${stepCount === 1 ? 'step' : 'steps'}`
 }
 
-function App() {
-  const sharedSeed = useMemo(() => readSharedSeed(), [])
-  const initialSeed = isValidSeed(sharedSeed) ? sharedSeed : null
-  const initialError = sharedSeed && !initialSeed ? getSeedError(sharedSeed) : null
+function getDigitLabel(digitCount: number): string {
+  if (digitCount === 4) {
+    return 'Four-digit'
+  }
 
-  const [input, setInput] = useState(sharedSeed)
+  if (digitCount === 3) {
+    return 'Three-digit'
+  }
+
+  return `${digitCount}-digit`
+}
+
+function App() {
+  const sharedState = useMemo(() => readSharedState(), [])
+  const initialRoutine = KAPREKAR_ROUTINES[sharedState.modeId]
+  const initialSeed = isValidSeed(sharedState.seed, initialRoutine) ? sharedState.seed : null
+  const initialError =
+    sharedState.seed && !initialSeed ? getSeedError(sharedState.seed, initialRoutine) : null
+
+  const [modeId, setModeId] = useState<KaprekarRoutineId>(sharedState.modeId)
+  const [input, setInput] = useState(sharedState.seed)
   const [activeSeed, setActiveSeed] = useState<string | null>(initialSeed)
   const [error, setError] = useState<string | null>(initialError)
   const [announcement, setAnnouncement] = useState(
     initialSeed
-      ? `Loaded ${initialSeed}.`
-      : initialError ?? 'Enter four digits to start.',
+      ? `Loaded ${initialSeed} for ${initialRoutine.constant}.`
+      : initialError ?? `Enter ${initialRoutine.digitCount} digits to start.`,
   )
   const [visibleSteps, setVisibleSteps] = useState(initialSeed ? 1 : 0)
   const [animationNonce, setAnimationNonce] = useState(0)
@@ -145,14 +476,26 @@ function App() {
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null)
   const stepRefs = useRef<Record<number, HTMLLIElement | null>>({})
 
+  const routine = KAPREKAR_ROUTINES[modeId]
+  const selectedRoutineUi = routineUi[modeId]
+  const quickRules = [
+    `${routine.digitCount} digits`,
+    'not all the same',
+    `${selectedRoutineUi.quickRuleExample} works`,
+  ]
+
   const sequence = useMemo(
-    () => (activeSeed ? generateKaprekarSequence(activeSeed) : []),
-    [activeSeed],
+    () => (activeSeed ? generateKaprekarSequence(activeSeed, routine) : []),
+    [activeSeed, routine],
   )
   const revealedSequence = useMemo(
     () => (reducedMotion ? sequence : sequence.slice(0, visibleSteps)),
     [sequence, reducedMotion, visibleSteps],
   )
+
+  useEffect(() => {
+    document.title = `${routine.constant} | Kaprekar Explorer`
+  }, [routine.constant])
 
   useEffect(() => {
     if (reducedMotion || sequence.length <= 1) {
@@ -212,11 +555,11 @@ function App() {
 
   const helperTextId = error ? 'seed-help seed-error' : 'seed-help'
   const resultText = activeSeed
-    ? `${activeSeed} reaches ${KAPREKAR_CONSTANT} in ${formatStepCount(sequence.length)}.`
+    ? `${activeSeed} reaches ${routine.constant} in ${formatStepCount(sequence.length)}.`
     : 'The written math will appear here.'
 
   function runSequence(seed: string, source: 'manual' | 'random' | 'replay') {
-    const nextSequence = generateKaprekarSequence(seed)
+    const nextSequence = generateKaprekarSequence(seed, routine)
 
     stepRefs.current = {}
     setInput(seed)
@@ -224,11 +567,13 @@ function App() {
     setError(null)
     setVisibleSteps(reducedMotion ? nextSequence.length : 1)
     setAnimationNonce((current) => current + 1)
-    writeSharedSeed(seed)
+    writeSharedState({ modeId, seed })
     inputRef.current?.blur()
 
     if (source === 'random') {
-      setAnnouncement(`Random seed ${seed}. ${formatStepCount(nextSequence.length)} to ${KAPREKAR_CONSTANT}.`)
+      setAnnouncement(
+        `Random seed ${seed}. ${formatStepCount(nextSequence.length)} to ${routine.constant}.`,
+      )
       return
     }
 
@@ -237,14 +582,14 @@ function App() {
       return
     }
 
-    setAnnouncement(`${seed} reaches ${KAPREKAR_CONSTANT} in ${formatStepCount(nextSequence.length)}.`)
+    setAnnouncement(`${seed} reaches ${routine.constant} in ${formatStepCount(nextSequence.length)}.`)
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    const nextSeed = sanitizeSeed(input)
-    const nextError = getSeedError(nextSeed)
+    const nextSeed = sanitizeSeed(input, routine.digitCount)
+    const nextError = getSeedError(nextSeed, routine)
 
     if (nextError) {
       setError(nextError)
@@ -256,18 +601,38 @@ function App() {
   }
 
   function handleInputChange(nextValue: string) {
-    const sanitized = sanitizeSeed(nextValue)
+    const sanitized = sanitizeSeed(nextValue, routine.digitCount)
     setInput(sanitized)
 
     if (!error) {
       return
     }
 
-    setError(sanitized.length === 4 ? getSeedError(sanitized) : null)
+    setError(sanitized.length === routine.digitCount ? getSeedError(sanitized, routine) : null)
+  }
+
+  function handleModeChange(nextModeId: KaprekarRoutineId) {
+    if (nextModeId === modeId) {
+      return
+    }
+
+    const nextRoutine = KAPREKAR_ROUTINES[nextModeId]
+
+    stepRefs.current = {}
+    setModeId(nextModeId)
+    setInput('')
+    setActiveSeed(null)
+    setError(null)
+    setVisibleSteps(0)
+    setAnimationNonce((current) => current + 1)
+    setAnnouncement(`${nextRoutine.constant} mode. Enter ${nextRoutine.digitCount} digits to start.`)
+    writeSharedState({ modeId: nextModeId })
+    resultsHeadingRef.current?.blur()
+    inputRef.current?.focus({ preventScroll: true })
   }
 
   function handleRandomize() {
-    runSequence(generateRandomValidSeed(), 'random')
+    runSequence(generateRandomValidSeed(routine), 'random')
   }
 
   function handleReset() {
@@ -278,7 +643,7 @@ function App() {
     setVisibleSteps(0)
     setAnimationNonce((current) => current + 1)
     setAnnouncement('Reset.')
-    writeSharedSeed()
+    writeSharedState({ modeId })
     resultsHeadingRef.current?.blur()
   }
 
@@ -287,14 +652,13 @@ function App() {
       return
     }
 
-    const url = new URL(window.location.href)
-    url.searchParams.set(QUERY_PARAM, activeSeed)
+    const url = buildSharedUrl({ modeId, seed: activeSeed })
 
     try {
       if (navigator.share) {
         await navigator.share({
-          title: '6174 - Kaprekar Constant Explorer',
-          text: `Watch ${activeSeed} fall into ${KAPREKAR_CONSTANT}.`,
+          title: `${routine.constant} - Kaprekar Constant Explorer`,
+          text: `Watch ${activeSeed} fall into ${routine.constant}.`,
           url: url.toString(),
         })
         setAnnouncement('Share sheet opened.')
@@ -321,28 +685,40 @@ function App() {
   }
 
   return (
-    <div className="relative isolate min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]">
+    <div
+      className="relative isolate min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]"
+      style={selectedRoutineUi.themeOverrides}
+    >
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div
           aria-hidden="true"
-          className="absolute left-[-10rem] top-[-8rem] h-[22rem] w-[22rem] rounded-full bg-[radial-gradient(circle,rgba(109,40,217,0.14),transparent_68%)] blur-3xl"
+          className="absolute left-[-10rem] top-[-8rem] h-[22rem] w-[22rem] rounded-full blur-3xl"
+          style={{
+            background: 'radial-gradient(circle, var(--bg-accent-1), transparent 68%)',
+          }}
         />
         <div
           aria-hidden="true"
-          className="absolute bottom-[-12rem] right-[-9rem] h-[24rem] w-[24rem] rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.12),transparent_70%)] blur-3xl"
+          className="absolute bottom-[-12rem] right-[-9rem] h-[24rem] w-[24rem] rounded-full blur-3xl"
+          style={{
+            background: 'radial-gradient(circle, var(--bg-accent-2), transparent 70%)',
+          }}
         />
         <div
           aria-hidden="true"
-          className="absolute right-[18%] top-[24%] h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(244,114,182,0.08),transparent_68%)] blur-3xl"
+          className="absolute right-[18%] top-[24%] h-48 w-48 rounded-full blur-3xl"
+          style={{
+            background: 'radial-gradient(circle, var(--bg-accent-3), transparent 68%)',
+          }}
         />
-        {floatingMarks.map(({ className, style, value }) => (
+        {floatingMarkLayout.map(({ className, fragmentIndex, style }, index) => (
           <div
             aria-hidden="true"
             className={`absolute select-none font-black tracking-[-0.04em] opacity-[0.12] ${className}`}
-            key={`${value}-${className}`}
+            key={`${modeId}-${index}`}
             style={style}
           >
-            {value}
+            {selectedRoutineUi.backgroundFragments[fragmentIndex]}
           </div>
         ))}
       </div>
@@ -353,8 +729,32 @@ function App() {
         </p>
 
         <header className="flex items-center justify-between gap-3">
-          <div className="inline-flex items-center rounded-full border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),var(--accent-secondary-soft))] px-4 py-2 font-mono text-sm font-black tracking-[0.35em] text-[var(--heading)]">
-            6174
+          <div
+            aria-label="Choose the Kaprekar routine"
+            className="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--surface-soft)] p-1 shadow-[0_12px_24px_rgba(15,23,42,0.08)]"
+            role="group"
+          >
+            {KAPREKAR_ROUTINE_IDS.map((candidateId) => {
+              const candidate = KAPREKAR_ROUTINES[candidateId]
+              const isActive = candidateId === modeId
+
+              return (
+                <button
+                  aria-label={`Switch to ${candidate.constant} mode`}
+                  aria-pressed={isActive}
+                  className={`rounded-full px-3 py-2 font-mono text-sm font-black tracking-[0.3em] transition sm:px-4 ${
+                    isActive
+                      ? 'bg-[linear-gradient(135deg,var(--accent-soft),var(--accent-secondary-soft))] text-[var(--heading)]'
+                      : 'text-[var(--muted)] hover:text-[var(--heading)]'
+                  }`}
+                  key={candidateId}
+                  onClick={() => handleModeChange(candidateId)}
+                  type="button"
+                >
+                  {candidate.constant}
+                </button>
+              )
+            })}
           </div>
 
           <div className="flex items-center gap-2">
@@ -382,16 +782,16 @@ function App() {
         <main className="flex-1 pb-10 pt-10 sm:pt-14">
           <section className="mx-auto max-w-3xl text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[var(--muted)]">
-              Kaprekar routine
+              Kaprekar routine · {routine.constant} mode
             </p>
             <h1 className="mt-4 text-5xl font-black tracking-[-0.05em] text-[var(--heading)] sm:text-6xl md:text-7xl">
-              <span className="block">4 digits in.</span>
+              <span className="block">{routine.digitCount} digits in.</span>
               <span className="bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary),var(--accent-tertiary))] bg-clip-text text-transparent">
-                6174 out.
+                {routine.constant} out.
               </span>
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-[var(--muted)] sm:text-lg">
-              Largest minus smallest, repeated until Kaprekar's constant takes over.
+              Largest minus smallest, repeated until {routine.constant} takes over.
             </p>
 
             <div className="mt-6 flex flex-wrap justify-center gap-2">
@@ -412,7 +812,7 @@ function App() {
               onSubmit={handleSubmit}
             >
               <label className="sr-only" htmlFor="seed">
-                Four-digit starting value
+                {getDigitLabel(routine.digitCount)} starting value
               </label>
 
               <div className="flex flex-col gap-3 sm:flex-row">
@@ -424,10 +824,10 @@ function App() {
                   enterKeyHint="go"
                   id="seed"
                   inputMode="numeric"
-                  maxLength={4}
+                  maxLength={routine.digitCount}
                   onChange={(event) => handleInputChange(event.target.value)}
                   pattern="[0-9]*"
-                  placeholder="3524"
+                  placeholder={selectedRoutineUi.placeholderSeed}
                   ref={inputRef}
                   spellCheck={false}
                   type="text"
@@ -441,11 +841,8 @@ function App() {
               </div>
 
               <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-                <p
-                  className="text-sm leading-6 text-[var(--muted)]"
-                  id="seed-help"
-                >
-                  Use any 4 digits except all the same.
+                <p className="text-sm leading-6 text-[var(--muted)]" id="seed-help">
+                  Use any {routine.digitCount} digits except all the same.
                 </p>
                 <button className="button-shell !py-2" onClick={handleRandomize} type="button">
                   <Dice5 className="size-4" />
@@ -494,7 +891,7 @@ function App() {
                 target="_blank"
               >
                 <ExternalLink className="size-4" />
-                What is 6174?
+                Learn {routine.constant}
               </a>
             </div>
           </section>
@@ -503,7 +900,7 @@ function App() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[var(--muted)]">
-                  Animated subtraction
+                  Animated subtraction · {routine.constant}
                 </p>
                 <h2
                   className="mt-2 text-3xl font-black tracking-[-0.04em] text-[var(--heading)] sm:text-4xl"
@@ -532,11 +929,12 @@ function App() {
                 <ol className="mt-5 grid gap-3">
                   {revealedSequence.map((step) => (
                     <SequenceStepCard
-                      key={`${animationNonce}-${step.stepNumber}`}
+                      key={`${modeId}-${animationNonce}-${step.stepNumber}`}
                       ref={(element) => {
                         stepRefs.current[step.stepNumber] = element
                       }}
                       reducedMotion={reducedMotion}
+                      routine={routine}
                       step={step}
                     />
                   ))}
@@ -561,7 +959,7 @@ function App() {
             ) : (
               <div className="glass-panel mt-5 p-6 text-center">
                 <p className="text-lg font-semibold text-[var(--heading)]">
-                  Try 3524 or hit Random.
+                  Try {selectedRoutineUi.placeholderSeed} or hit Random.
                 </p>
               </div>
             )}

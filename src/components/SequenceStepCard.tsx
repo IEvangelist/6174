@@ -1,9 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { forwardRef, useId, useState } from 'react'
-import type { KaprekarStep } from '../lib/kaprekar'
+import type { KaprekarRoutine, KaprekarStep } from '../lib/kaprekar'
 
 interface SequenceStepCardProps {
+  routine: KaprekarRoutine
   step: KaprekarStep
   reducedMotion: boolean
 }
@@ -42,7 +43,7 @@ const ruleVariants = {
 }
 
 export const SequenceStepCard = forwardRef<HTMLLIElement, SequenceStepCardProps>(
-  function SequenceStepCard({ step, reducedMotion }: SequenceStepCardProps, ref) {
+  function SequenceStepCard({ routine, step, reducedMotion }: SequenceStepCardProps, ref) {
     const [isExpanded, setIsExpanded] = useState(false)
     const detailsId = useId()
 
@@ -67,7 +68,7 @@ export const SequenceStepCard = forwardRef<HTMLLIElement, SequenceStepCardProps>
                   : 'bg-[var(--surface-soft)]'
               }`}
             >
-              {step.reachedConstant ? '6174' : step.input}
+              {step.reachedConstant ? routine.constant : step.input}
             </span>
           </div>
 
@@ -173,8 +174,8 @@ export const SequenceStepCard = forwardRef<HTMLLIElement, SequenceStepCardProps>
                         </p>
                         <p>
                           {step.reachedConstant
-                            ? 'That reaches 6174, so the routine stops here.'
-                            : `Use ${step.result} as the next 4-digit number and repeat.`}
+                            ? `That reaches ${routine.constant}, so the routine stops here.`
+                            : `Use ${step.result} as the next ${routine.digitCount}-digit number and repeat.`}
                         </p>
                       </div>
                     </div>
