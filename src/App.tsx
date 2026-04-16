@@ -7,7 +7,7 @@ import {
   RefreshCcw,
   Share2,
 } from 'lucide-react'
-import { useReducedMotion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
   useEffect,
   useMemo,
@@ -44,6 +44,8 @@ const WIKIPEDIA_URL = "https://en.wikipedia.org/wiki/Kaprekar%27s_constant"
 const primaryButtonClass =
   'inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_var(--accent-soft)] transition duration-200 hover:brightness-105 focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent-soft)] disabled:cursor-not-allowed disabled:opacity-50'
 
+type TransitionDirection = -1 | 1
+
 const quickRuleStyles = [
   {
     borderColor: 'var(--accent-soft)',
@@ -61,6 +63,32 @@ const quickRuleStyles = [
     color: 'var(--accent-tertiary)',
   },
 ] as const
+
+const modeContentVariants = {
+  hidden: (direction: TransitionDirection) => ({
+    opacity: 0,
+    x: direction * 32,
+    filter: 'blur(10px)',
+  }),
+  visible: {
+    opacity: 1,
+    x: 0,
+    filter: 'blur(0px)',
+    transition: {
+      duration: 0.28,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
+  },
+  exit: (direction: TransitionDirection) => ({
+    opacity: 0,
+    x: direction * -24,
+    filter: 'blur(8px)',
+    transition: {
+      duration: 0.2,
+      ease: [0.4, 0, 1, 1] as const,
+    },
+  }),
+}
 
 type CSSVariableOverrides = CSSProperties & Record<`--${string}`, string>
 
@@ -452,6 +480,15 @@ function getDigitLabel(digitCount: number): string {
   return `${digitCount}-digit`
 }
 
+function getModeTransitionDirection(
+  currentModeId: KaprekarRoutineId,
+  nextModeId: KaprekarRoutineId,
+): TransitionDirection {
+  return KAPREKAR_ROUTINE_IDS.indexOf(nextModeId) > KAPREKAR_ROUTINE_IDS.indexOf(currentModeId)
+    ? 1
+    : -1
+}
+
 function App() {
   const sharedState = useMemo(() => readSharedState(), [])
   const initialRoutine = KAPREKAR_ROUTINES[sharedState.modeId]
@@ -468,6 +505,8 @@ function App() {
       ? `Loaded ${initialSeed} for ${initialRoutine.constant}.`
       : initialError ?? `Enter ${initialRoutine.digitCount} digits to start.`,
   )
+  const [modeTransitionDirection, setModeTransitionDirection] =
+    useState<TransitionDirection>(1)
   const [visibleSteps, setVisibleSteps] = useState(initialSeed ? 1 : 0)
   const [animationNonce, setAnimationNonce] = useState(0)
 
@@ -620,6 +659,7 @@ function App() {
     const nextRoutine = KAPREKAR_ROUTINES[nextModeId]
 
     stepRefs.current = {}
+    setModeTransitionDirection(getModeTransitionDirection(modeId, nextModeId))
     setModeId(nextModeId)
     setInput('')
     setActiveSeed(null)
@@ -629,7 +669,9 @@ function App() {
     setAnnouncement(`${nextRoutine.constant} mode. Enter ${nextRoutine.digitCount} digits to start.`)
     writeSharedState({ modeId: nextModeId })
     resultsHeadingRef.current?.blur()
-    inputRef.current?.focus({ preventScroll: true })
+    window.requestAnimationFrame(() => {
+      inputRef.current?.focus({ preventScroll: true })
+    })
   }
 
   function handleRandomize() {
@@ -802,7 +844,17 @@ function App() {
           </div>
         </header>
 
-        <main className="flex-1 pb-10 pt-10 sm:pt-14">
+        <main className="flex-1">
+          <AnimatePresence custom={modeTransitionDirection} initial={false} mode="wait">
+            <motion.div
+              animate={reducedMotion ? { filter: 'blur(0px)', opacity: 1, x: 0 } : 'visible'}
+              className="pb-10 pt-10 sm:pt-14"
+              custom={modeTransitionDirection}
+              exit={reducedMotion ? { filter: 'blur(0px)', opacity: 1, x: 0 } : 'exit'}
+              initial={reducedMotion ? false : 'hidden'}
+              key={modeId}
+              variants={modeContentVariants}
+            >
           <section className="mx-auto max-w-3xl text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[var(--muted)]">
               Kaprekar routine · {routine.constant} mode
@@ -987,6 +1039,8 @@ function App() {
               </div>
             )}
           </section>
+            </motion.div>
+          </AnimatePresence>
         </main>
 
         <footer className="flex flex-wrap items-center justify-center gap-4 border-t border-[var(--border)] pt-5 text-sm text-[var(--muted)]">
