@@ -6,13 +6,7 @@ import {
   RefreshCcw,
   Share2,
 } from 'lucide-react'
-import {
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-} from 'framer-motion'
+import { useReducedMotion } from 'framer-motion'
 import {
   useEffect,
   useMemo,
@@ -20,7 +14,6 @@ import {
   useState,
   type ComponentType,
   type FormEvent,
-  type PointerEvent,
 } from 'react'
 import { GitHubMarkIcon } from './components/GitHubMarkIcon'
 import { SequenceStepCard } from './components/SequenceStepCard'
@@ -66,22 +59,37 @@ const floatingMarks = [
   {
     value: '67',
     className:
-      'left-[6%] top-[18%] hidden rotate-[-7deg] text-[clamp(3.75rem,8.5vw,6.5rem)] text-[var(--accent-secondary-soft)] lg:block',
+      'left-[6%] top-[16%] hidden rotate-[-7deg] text-[clamp(3.5rem,7vw,5.75rem)] text-[var(--accent-secondary-soft)] lg:block',
   },
   {
     value: '41',
     className:
-      'right-[10%] top-[24%] hidden rotate-[5deg] text-[clamp(4rem,9vw,7rem)] text-[var(--accent-tertiary-soft)] xl:block',
+      'right-[10%] top-[22%] hidden rotate-[5deg] text-[clamp(3.8rem,8vw,6.4rem)] text-[var(--accent-tertiary-soft)] xl:block',
   },
   {
     value: '67',
     className:
-      'left-[12%] bottom-[14%] hidden rotate-[-10deg] text-[clamp(3.25rem,7.5vw,5.75rem)] text-[var(--accent-soft)] xl:block',
+      'left-[12%] bottom-[12%] hidden rotate-[-10deg] text-[clamp(3rem,6.8vw,5.2rem)] text-[var(--accent-soft)] xl:block',
   },
   {
     value: '41',
     className:
-      'right-[18%] bottom-[10%] hidden rotate-[8deg] text-[clamp(3.5rem,8vw,6.25rem)] text-[var(--accent-secondary-soft)] lg:block',
+      'right-[18%] bottom-[10%] hidden rotate-[8deg] text-[clamp(3.2rem,7vw,5.5rem)] text-[var(--accent-secondary-soft)] lg:block',
+  },
+  {
+    value: '67',
+    className:
+      'left-[24%] top-[8%] hidden rotate-[4deg] text-[clamp(2.6rem,5.5vw,4.4rem)] text-[var(--accent-soft)] md:block',
+  },
+  {
+    value: '41',
+    className:
+      'left-[8%] top-[46%] hidden rotate-[-5deg] text-[clamp(2.4rem,5vw,4rem)] text-[var(--accent-tertiary-soft)] xl:block',
+  },
+  {
+    value: '67',
+    className:
+      'right-[24%] top-[44%] hidden rotate-[6deg] text-[clamp(2.8rem,5.6vw,4.6rem)] text-[var(--accent-secondary-soft)] 2xl:block',
   },
 ] as const
 
@@ -145,23 +153,6 @@ function App() {
   const inputRef = useRef<HTMLInputElement>(null)
   const resultsHeadingRef = useRef<HTMLHeadingElement>(null)
   const stepRefs = useRef<Record<number, HTMLLIElement | null>>({})
-
-  const rawParallaxX = useMotionValue(0)
-  const rawParallaxY = useMotionValue(0)
-  const parallaxX = useSpring(rawParallaxX, {
-    stiffness: 42,
-    damping: 20,
-    mass: 1,
-  })
-  const parallaxY = useSpring(rawParallaxY, {
-    stiffness: 42,
-    damping: 20,
-    mass: 1,
-  })
-  const orbPrimaryX = useTransform(parallaxX, (value) => value * 24)
-  const orbPrimaryY = useTransform(parallaxY, (value) => value * 18)
-  const orbSecondaryX = useTransform(parallaxX, (value) => value * -18)
-  const orbSecondaryY = useTransform(parallaxY, (value) => value * -14)
 
   const sequence = useMemo(
     () => (activeSeed ? generateKaprekarSequence(activeSeed) : []),
@@ -331,20 +322,6 @@ function App() {
     }
   }
 
-  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
-    if (reducedMotion) {
-      return
-    }
-
-    rawParallaxX.set((event.clientX / window.innerWidth - 0.5) * 2)
-    rawParallaxY.set((event.clientY / window.innerHeight - 0.5) * 2)
-  }
-
-  function handlePointerLeave() {
-    rawParallaxX.set(0)
-    rawParallaxY.set(0)
-  }
-
   function handleBackToTop() {
     window.scrollTo({
       top: 0,
@@ -353,36 +330,32 @@ function App() {
   }
 
   return (
-    <div
-      className="relative isolate min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]"
-      onPointerLeave={handlePointerLeave}
-      onPointerMove={handlePointerMove}
-    >
-      <motion.div
-        aria-hidden="true"
-          className="pointer-events-none absolute left-[-10rem] top-[-8rem] h-[22rem] w-[22rem] rounded-full bg-[radial-gradient(circle,rgba(109,40,217,0.18),transparent_68%)] blur-3xl"
-          style={reducedMotion ? undefined : { x: orbPrimaryX, y: orbPrimaryY }}
-        />
-        <motion.div
+    <div className="relative isolate min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-[-12rem] right-[-9rem] h-[24rem] w-[24rem] rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.16),transparent_70%)] blur-3xl"
-          style={reducedMotion ? undefined : { x: orbSecondaryX, y: orbSecondaryY }}
+          className="absolute left-[-10rem] top-[-8rem] h-[22rem] w-[22rem] rounded-full bg-[radial-gradient(circle,rgba(109,40,217,0.14),transparent_68%)] blur-3xl"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute right-[18%] top-[24%] h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(244,114,182,0.12),transparent_68%)] blur-3xl"
+          className="absolute bottom-[-12rem] right-[-9rem] h-[24rem] w-[24rem] rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.12),transparent_70%)] blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute right-[18%] top-[24%] h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(244,114,182,0.08),transparent_68%)] blur-3xl"
         />
         {floatingMarks.map(({ className, value }) => (
           <div
             aria-hidden="true"
-            className={`pointer-events-none absolute select-none font-black tracking-[-0.04em] opacity-[0.18] ${className}`}
+            className={`absolute select-none font-black tracking-[-0.04em] opacity-[0.14] ${className}`}
             key={`${value}-${className}`}
           >
             {value}
           </div>
         ))}
+      </div>
 
-        <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-5 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-5 sm:px-6 lg:px-8">
         <p aria-live="polite" className="sr-only">
           {announcement}
         </p>
@@ -420,7 +393,10 @@ function App() {
               Kaprekar routine
             </p>
             <h1 className="mt-4 text-5xl font-black tracking-[-0.05em] text-[var(--heading)] sm:text-6xl md:text-7xl">
-              4 digits in. 6174 out.
+              <span className="block">4 digits in.</span>
+              <span className="bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary),var(--accent-tertiary))] bg-clip-text text-transparent">
+                6174 out.
+              </span>
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-[var(--muted)] sm:text-lg">
               Largest minus smallest, repeated until Kaprekar's constant takes over.
