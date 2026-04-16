@@ -59,37 +59,82 @@ const floatingMarks = [
   {
     value: '67',
     className:
-      'left-[6%] top-[16%] hidden rotate-[-7deg] text-[clamp(3.5rem,7vw,5.75rem)] text-[var(--accent-secondary-soft)] lg:block',
+      'left-[4%] top-[14%] hidden rotate-[-6deg] text-[clamp(1.9rem,3.2vw,3rem)] text-[var(--accent-secondary-soft)] md:block',
   },
   {
     value: '41',
     className:
-      'right-[10%] top-[22%] hidden rotate-[5deg] text-[clamp(3.8rem,8vw,6.4rem)] text-[var(--accent-tertiary-soft)] xl:block',
+      'left-[14%] top-[8%] hidden rotate-[4deg] text-[clamp(2.1rem,3.5vw,3.2rem)] text-[var(--accent-soft)] md:block',
   },
   {
     value: '67',
     className:
-      'left-[12%] bottom-[12%] hidden rotate-[-10deg] text-[clamp(3rem,6.8vw,5.2rem)] text-[var(--accent-soft)] xl:block',
+      'left-[24%] top-[19%] hidden rotate-[-2deg] text-[clamp(2rem,3.4vw,3.1rem)] text-[var(--accent-tertiary-soft)] lg:block',
   },
   {
     value: '41',
     className:
-      'right-[18%] bottom-[10%] hidden rotate-[8deg] text-[clamp(3.2rem,7vw,5.5rem)] text-[var(--accent-secondary-soft)] lg:block',
+      'left-[34%] top-[10%] hidden rotate-[7deg] text-[clamp(1.8rem,3vw,2.8rem)] text-[var(--accent-secondary-soft)] lg:block',
   },
   {
     value: '67',
     className:
-      'left-[24%] top-[8%] hidden rotate-[4deg] text-[clamp(2.6rem,5.5vw,4.4rem)] text-[var(--accent-soft)] md:block',
+      'right-[8%] top-[16%] hidden rotate-[6deg] text-[clamp(2.3rem,3.8vw,3.4rem)] text-[var(--accent-tertiary-soft)] md:block',
   },
   {
     value: '41',
     className:
-      'left-[8%] top-[46%] hidden rotate-[-5deg] text-[clamp(2.4rem,5vw,4rem)] text-[var(--accent-tertiary-soft)] xl:block',
+      'right-[22%] top-[8%] hidden rotate-[-8deg] text-[clamp(1.9rem,3.2vw,3rem)] text-[var(--accent-secondary-soft)] lg:block',
   },
   {
     value: '67',
     className:
-      'right-[24%] top-[44%] hidden rotate-[6deg] text-[clamp(2.8rem,5.6vw,4.6rem)] text-[var(--accent-secondary-soft)] 2xl:block',
+      'right-[32%] top-[22%] hidden rotate-[3deg] text-[clamp(2.1rem,3.5vw,3.1rem)] text-[var(--accent-soft)] xl:block',
+  },
+  {
+    value: '41',
+    className:
+      'left-[8%] top-[42%] hidden rotate-[-5deg] text-[clamp(2rem,3.4vw,3rem)] text-[var(--accent-tertiary-soft)] lg:block',
+  },
+  {
+    value: '67',
+    className:
+      'left-[18%] top-[56%] hidden rotate-[7deg] text-[clamp(1.8rem,3vw,2.7rem)] text-[var(--accent-secondary-soft)] md:block',
+  },
+  {
+    value: '41',
+    className:
+      'left-[28%] top-[48%] hidden rotate-[-6deg] text-[clamp(2.2rem,3.6vw,3.2rem)] text-[var(--accent-soft)] lg:block',
+  },
+  {
+    value: '67',
+    className:
+      'right-[16%] top-[46%] hidden rotate-[5deg] text-[clamp(2.1rem,3.5vw,3.2rem)] text-[var(--accent-secondary-soft)] lg:block',
+  },
+  {
+    value: '41',
+    className:
+      'right-[6%] top-[58%] hidden rotate-[-7deg] text-[clamp(1.9rem,3.2vw,2.9rem)] text-[var(--accent-tertiary-soft)] md:block',
+  },
+  {
+    value: '67',
+    className:
+      'left-[10%] bottom-[12%] hidden rotate-[-8deg] text-[clamp(2rem,3.3vw,3rem)] text-[var(--accent-soft)] xl:block',
+  },
+  {
+    value: '41',
+    className:
+      'left-[24%] bottom-[8%] hidden rotate-[4deg] text-[clamp(1.8rem,3vw,2.7rem)] text-[var(--accent-secondary-soft)] lg:block',
+  },
+  {
+    value: '67',
+    className:
+      'right-[28%] bottom-[12%] hidden rotate-[6deg] text-[clamp(2.1rem,3.5vw,3.1rem)] text-[var(--accent-tertiary-soft)] lg:block',
+  },
+  {
+    value: '41',
+    className:
+      'right-[12%] bottom-[7%] hidden rotate-[-5deg] text-[clamp(1.9rem,3.2vw,2.8rem)] text-[var(--accent-secondary-soft)] xl:block',
   },
 ] as const
 
@@ -347,7 +392,7 @@ function App() {
         {floatingMarks.map(({ className, value }) => (
           <div
             aria-hidden="true"
-            className={`absolute select-none font-black tracking-[-0.04em] opacity-[0.14] ${className}`}
+            className={`absolute select-none font-black tracking-[-0.04em] opacity-[0.12] ${className}`}
             key={`${value}-${className}`}
           >
             {value}
