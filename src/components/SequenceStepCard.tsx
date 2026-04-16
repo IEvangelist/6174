@@ -57,10 +57,14 @@ export const SequenceStepCard = forwardRef<HTMLLIElement, SequenceStepCardProps>
       >
         <div className="glass-panel p-4 sm:p-5">
           <div className="flex items-center justify-between gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-[var(--muted)]">
-            <span>Step {step.stepNumber}</span>
+            <span className="rounded-full bg-[linear-gradient(135deg,var(--accent-soft),var(--accent-secondary-soft))] px-3 py-1 text-[var(--heading)]">
+              Step {step.stepNumber}
+            </span>
             <span
               className={`rounded-full px-3 py-1 ${
-                step.reachedConstant ? 'bg-[var(--accent-soft)] text-[var(--heading)]' : ''
+                step.reachedConstant
+                  ? 'bg-[linear-gradient(135deg,var(--accent-soft),var(--accent-tertiary-soft))] text-[var(--heading)]'
+                  : 'bg-[var(--surface-soft)]'
               }`}
             >
               {step.reachedConstant ? '6174' : step.input}
@@ -84,7 +88,13 @@ export const SequenceStepCard = forwardRef<HTMLLIElement, SequenceStepCardProps>
                 variants={ruleVariants}
               />
               <motion.div className="mt-3 flex justify-end" variants={lineVariants}>
-                <span className={step.reachedConstant ? 'text-[var(--accent-strong)]' : ''}>
+                <span
+                  className={
+                    step.reachedConstant
+                      ? 'bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary),var(--accent-tertiary))] bg-clip-text text-transparent drop-shadow-[0_0_18px_var(--accent-soft)]'
+                      : ''
+                  }
+                >
                   {step.result}
                 </span>
               </motion.div>
