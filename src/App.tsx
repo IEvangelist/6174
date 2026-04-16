@@ -22,6 +22,7 @@ import {
   type FormEvent,
   type PointerEvent,
 } from 'react'
+import { BrandMark } from './components/BrandMark'
 import { GitHubMarkIcon } from './components/GitHubMarkIcon'
 import { SequenceStepCard } from './components/SequenceStepCard'
 import { ThemeToggle } from './components/ThemeToggle'
@@ -59,6 +60,37 @@ const quickRuleStyles = [
     borderColor: 'var(--accent-tertiary-soft)',
     backgroundColor: 'var(--accent-tertiary-soft)',
     color: 'var(--accent-tertiary)',
+  },
+] as const
+
+const floatingMarks = [
+  {
+    value: '67',
+    className:
+      'left-[4%] top-[18%] hidden rotate-[-7deg] text-[clamp(4.5rem,10vw,9rem)] text-[var(--accent-secondary-soft)] md:block',
+    duration: 18,
+    delay: 0,
+  },
+  {
+    value: '41',
+    className:
+      'right-[8%] top-[22%] hidden rotate-[5deg] text-[clamp(5rem,11vw,10rem)] text-[var(--accent-tertiary-soft)] lg:block',
+    duration: 20,
+    delay: 1.6,
+  },
+  {
+    value: '67',
+    className:
+      'left-[12%] bottom-[14%] hidden rotate-[-10deg] text-[clamp(4rem,9vw,8rem)] text-[var(--accent-soft)] lg:block',
+    duration: 22,
+    delay: 0.8,
+  },
+  {
+    value: '41',
+    className:
+      'right-[18%] bottom-[10%] hidden rotate-[8deg] text-[clamp(4rem,9vw,8rem)] text-[var(--accent-secondary-soft)] md:block',
+    duration: 19,
+    delay: 2.4,
   },
 ] as const
 
@@ -322,6 +354,13 @@ function App() {
     rawParallaxY.set(0)
   }
 
+  function handleBackToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: reducedMotion ? 'auto' : 'smooth',
+    })
+  }
+
   return (
     <div
       className="relative isolate min-h-screen overflow-hidden bg-[var(--bg)] text-[var(--text)]"
@@ -342,15 +381,38 @@ function App() {
           aria-hidden="true"
           className="pointer-events-none absolute right-[18%] top-[24%] h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(244,114,182,0.12),transparent_68%)] blur-3xl"
         />
+        {floatingMarks.map(({ className, delay, duration, value }) => (
+          <motion.div
+            animate={reducedMotion ? undefined : { x: [0, 8, 0], y: [0, -14, 0] }}
+            aria-hidden="true"
+            className={`pointer-events-none absolute select-none font-black tracking-[-0.08em] opacity-70 ${className}`}
+            key={`${value}-${className}`}
+            transition={
+              reducedMotion
+                ? undefined
+                : {
+                    duration,
+                    delay,
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: 'easeInOut',
+                  }
+            }
+          >
+            {value}
+          </motion.div>
+        ))}
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-5 sm:px-6 lg:px-8">
+        <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-5 sm:px-6 lg:px-8">
         <p aria-live="polite" className="sr-only">
           {announcement}
         </p>
 
-          <header className="flex items-center justify-between gap-3">
-          <div className="inline-flex items-center rounded-full border border-[var(--border)] bg-[linear-gradient(135deg,var(--accent-soft),var(--accent-secondary-soft))] px-4 py-2 font-mono text-sm font-black tracking-[0.35em] text-[var(--heading)]">
-            6174
+        <header className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <BrandMark />
+            <div className="font-mono text-sm font-black tracking-[0.28em] text-[var(--heading)]">
+              6174
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -388,11 +450,11 @@ function App() {
             </p>
 
             <div className="mt-6 flex flex-wrap justify-center gap-2">
-              {quickRules.map((rule) => (
+              {quickRules.map((rule, index) => (
                 <span
                   className="rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em]"
                   key={rule}
-                  style={quickRuleStyles[quickRules.indexOf(rule)]}
+                  style={quickRuleStyles[index]}
                 >
                   {rule}
                 </span>
@@ -521,18 +583,27 @@ function App() {
             </div>
 
             {activeSeed ? (
-              <ol className="mt-5 grid gap-3">
-                {revealedSequence.map((step) => (
-                  <SequenceStepCard
-                    key={`${animationNonce}-${step.stepNumber}`}
-                    ref={(element) => {
-                      stepRefs.current[step.stepNumber] = element
-                    }}
-                    reducedMotion={reducedMotion}
-                    step={step}
-                  />
-                ))}
-              </ol>
+              <>
+                <ol className="mt-5 grid gap-3">
+                  {revealedSequence.map((step) => (
+                    <SequenceStepCard
+                      key={`${animationNonce}-${step.stepNumber}`}
+                      ref={(element) => {
+                        stepRefs.current[step.stepNumber] = element
+                      }}
+                      reducedMotion={reducedMotion}
+                      step={step}
+                    />
+                  ))}
+                </ol>
+                {revealedSequence.length === sequence.length ? (
+                  <div className="mt-4 flex justify-center">
+                    <button className="button-shell" onClick={handleBackToTop} type="button">
+                      Back to top
+                    </button>
+                  </div>
+                ) : null}
+              </>
             ) : (
               <div className="glass-panel mt-5 p-6 text-center">
                 <p className="text-lg font-semibold text-[var(--heading)]">
