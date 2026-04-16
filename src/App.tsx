@@ -1,5 +1,6 @@
 import {
   ArrowRight,
+  ArrowUp,
   Dice5,
   ExternalLink,
   Globe2,
@@ -595,8 +596,17 @@ function App() {
                   ))}
                 </ol>
                 {revealedSequence.length === sequence.length ? (
-                  <div className="mt-4 flex justify-center">
+                  <div className="mt-4 flex flex-wrap justify-center gap-3">
+                    <button className="button-shell" onClick={handleReset} type="button">
+                      <RefreshCcw className="size-4" />
+                      Reset
+                    </button>
+                    <button className="button-shell" onClick={() => void handleShare()} type="button">
+                      <Share2 className="size-4" />
+                      Share
+                    </button>
                     <button className="button-shell" onClick={handleBackToTop} type="button">
+                      <ArrowUp className="size-4" />
                       Back to top
                     </button>
                   </div>
