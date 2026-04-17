@@ -2,6 +2,18 @@
 
 A GitHub Pages-ready React + Vite + TypeScript + Tailwind CSS single-page app that animates Kaprekar's routine in two modes: valid 4-digit inputs collapsing into **6174**, or valid 3-digit inputs collapsing into **495**.
 
+**Live site:** https://ievangelist.github.io/6174/
+
+## Screenshots
+
+| 6174 mode | 495 mode |
+| --- | --- |
+| <img src="./README.assets/hero-6174.jpg" alt="Kaprekar Explorer in 6174 mode" width="100%" /> | <img src="./README.assets/hero-495.jpg" alt="Kaprekar Explorer in 495 mode" width="100%" /> |
+
+<p align="center">
+  <img src="./README.assets/sequence-6174.jpg" alt="Kaprekar Explorer showing animated 6174 subtraction cards" width="900" />
+</p>
+
 ## Features
 
 - Oversized input-first interface with random, replay, reset, and share actions
