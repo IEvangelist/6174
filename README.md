@@ -6,13 +6,43 @@ A GitHub Pages-ready React + Vite + TypeScript + Tailwind CSS single-page app th
 
 ## Screenshots
 
-| 6174 mode | 495 mode |
+| 6174 light | 6174 dark |
 | --- | --- |
-| <img src="./README.assets/hero-6174.jpg" alt="Kaprekar Explorer in 6174 mode" width="100%" /> | <img src="./README.assets/hero-495.jpg" alt="Kaprekar Explorer in 495 mode" width="100%" /> |
+| <img src="./README.assets/hero-6174.jpg" alt="Kaprekar Explorer in 6174 light theme" width="100%" /> | <img src="./README.assets/hero-6174-dark.jpg" alt="Kaprekar Explorer in 6174 dark theme" width="100%" /> |
+
+| 495 light | 495 dark |
+| --- | --- |
+| <img src="./README.assets/hero-495.jpg" alt="Kaprekar Explorer in 495 light theme" width="100%" /> | <img src="./README.assets/hero-495-dark.jpg" alt="Kaprekar Explorer in 495 dark theme" width="100%" /> |
 
 <p align="center">
   <img src="./README.assets/sequence-6174.jpg" alt="Kaprekar Explorer showing animated 6174 subtraction cards" width="900" />
 </p>
+
+## Quick walkthrough
+
+<p align="center">
+  <img src="./README.assets/walkthrough.gif" alt="Short walkthrough showing a seed being entered, solved, and expanded into animated subtraction cards" width="900" />
+</p>
+
+## How to use it
+
+1. Pick **6174** or **495** from the top-left toggle. The selected mode changes both the target constant and the valid seed length.
+2. Enter a valid seed or tap **Random** to generate one instantly.
+3. Press **Solve** to animate the routine step by step until the constant is reached.
+4. Expand any math card with the chevron to see how each subtraction step was built.
+5. Use the action buttons to share, replay, reset, or jump back to the top once the sequence is complete.
+
+## Key controls
+
+| Control | What it does |
+| --- | --- |
+| **6174 / 495** | Switches between the 4-digit and 3-digit Kaprekar routines |
+| **Random** | Generates a valid seed for the active mode |
+| **Solve** | Starts the animated subtraction sequence |
+| **Share** | Shares or copies a deep link for the current seed |
+| **Reset** | Clears the current run and starts fresh |
+| **Theme toggle** | Switches between light and dark themes |
+| **Replay / Back to top** | Re-runs the same sequence or jumps back up after the final card |
 
 ## Features
 
