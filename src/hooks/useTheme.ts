@@ -47,6 +47,11 @@ export function useTheme() {
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
+    // Force a repaint for browsers that keep stale composited layers after a theme flip.
+    document.body.getBoundingClientRect()
+    window.requestAnimationFrame(() => {
+      window.dispatchEvent(new Event('resize'))
+    })
 
     if (preference === 'system') {
       window.localStorage.removeItem(STORAGE_KEY)

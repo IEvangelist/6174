@@ -135,6 +135,14 @@ input[type='number'] {
     box-shadow: var(--shadow-lg);
   }
 
+  .sequence-panel {
+    @apply rounded-[1.75rem] border;
+    background: var(--surface);
+    border-color: var(--border);
+    box-shadow: var(--shadow-lg);
+    isolation: isolate;
+  }
+
   .button-shell {
     @apply inline-flex items-center justify-center gap-2 rounded-full border px-4 py-3 text-sm font-semibold transition duration-200;
     background: var(--surface-soft);
@@ -164,5 +172,6 @@ input[type='number'] {
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.14),
       0 10px 24px var(--paper-shadow);
+    isolation: isolate;
   }
 }

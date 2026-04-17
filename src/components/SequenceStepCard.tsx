@@ -56,7 +56,7 @@ export const SequenceStepCard = forwardRef<HTMLLIElement, SequenceStepCardProps>
         animate="visible"
         variants={cardVariants}
       >
-        <div className="glass-panel p-4 sm:p-5">
+        <div className="sequence-panel p-4 sm:p-5">
           <div className="flex items-center justify-between gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-[var(--muted)]">
             <span className="rounded-full bg-[linear-gradient(135deg,var(--accent-soft),var(--accent-secondary-soft))] px-3 py-1 text-[var(--heading)]">
               Step {step.stepNumber}
