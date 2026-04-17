@@ -37,7 +37,7 @@ import { createShareCardFile } from './lib/shareCard'
 
 const QUERY_PARAM = 'seed'
 const MODE_QUERY_PARAM = 'mode'
-const GITHUB_PROFILE_URL = 'https://github.com/IEvangelist'
+const GITHUB_REPOSITORY_URL = 'https://github.com/IEvangelist/6174'
 const PERSONAL_SITE_URL = 'https://davidpine.dev'
 const WIKIPEDIA_URL = "https://en.wikipedia.org/wiki/Kaprekar%27s_constant"
 
@@ -68,12 +68,12 @@ const modeContentVariants = {
   hidden: (direction: TransitionDirection) => ({
     opacity: 0,
     x: direction * 32,
-    filter: 'blur(10px)',
+    scale: 0.985,
   }),
   visible: {
     opacity: 1,
     x: 0,
-    filter: 'blur(0px)',
+    scale: 1,
     transition: {
       duration: 0.28,
       ease: [0.22, 1, 0.36, 1] as const,
@@ -82,7 +82,7 @@ const modeContentVariants = {
   exit: (direction: TransitionDirection) => ({
     opacity: 0,
     x: direction * -24,
-    filter: 'blur(8px)',
+    scale: 0.99,
     transition: {
       duration: 0.2,
       ease: [0.4, 0, 1, 1] as const,
@@ -404,7 +404,7 @@ interface ExternalLinkItem {
 }
 
 const externalLinks: ExternalLinkItem[] = [
-  { label: 'GitHub', icon: GitHubMarkIcon, href: GITHUB_PROFILE_URL },
+  { label: 'GitHub', icon: GitHubMarkIcon, href: GITHUB_REPOSITORY_URL },
   { label: 'davidpine.dev', icon: Globe2, href: PERSONAL_SITE_URL },
 ]
 
@@ -847,10 +847,10 @@ function App() {
         <main className="flex-1">
           <AnimatePresence custom={modeTransitionDirection} initial={false} mode="wait">
             <motion.div
-              animate={reducedMotion ? { filter: 'blur(0px)', opacity: 1, x: 0 } : 'visible'}
+              animate={reducedMotion ? { opacity: 1, scale: 1, x: 0 } : 'visible'}
               className="pb-10 pt-10 sm:pt-14"
               custom={modeTransitionDirection}
-              exit={reducedMotion ? { filter: 'blur(0px)', opacity: 1, x: 0 } : 'exit'}
+              exit={reducedMotion ? { opacity: 1, scale: 1, x: 0 } : 'exit'}
               initial={reducedMotion ? false : 'hidden'}
               key={modeId}
               variants={modeContentVariants}
@@ -1046,7 +1046,7 @@ function App() {
         <footer className="flex flex-wrap items-center justify-center gap-4 border-t border-[var(--border)] pt-5 text-sm text-[var(--muted)]">
           <a
             className="inline-flex items-center gap-2"
-            href={GITHUB_PROFILE_URL}
+            href={GITHUB_REPOSITORY_URL}
             rel="noreferrer"
             target="_blank"
           >
